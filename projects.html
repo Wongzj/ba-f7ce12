@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>项目复盘档案 · 面试准备</title>
+<style>
+  :root {
+    --bg: #f5f6f8; --card: #ffffff; --ink: #1c2330; --ink-2: #5a6478; --ink-3: #9aa3b5;
+    --line: #e6e9ef; --accent: #2563eb; --accent-soft: #eaf1fe; --teal: #0d9488;
+    --teal-soft: #e6f6f4; --amber: #d97706; --amber-soft: #fdf3e3; --rose: #dc2626;
+    --rose-soft: #fdecec; --violet: #7c3aed; --violet-soft: #f1ebfd; --green: #4d7c0f; --green-soft: #eaf2e2;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: "PingFang SC", "Microsoft YaHei", "Segoe UI", sans-serif;
+    background: var(--bg); color: var(--ink); padding: 32px 20px 64px;
+  }
+  .wrap { max-width: 1080px; margin: 0 auto; }
+  .hero {
+    background: linear-gradient(135deg, #0f766e 0%, #0d9488 55%, #14b8a6 100%);
+    border-radius: 18px; color: #fff; padding: 30px 36px;
+    display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;
+  }
+  .hero h1 { font-size: 24px; }
+  .hero p { margin-top: 8px; font-size: 14px; opacity: .85; }
+  .back-btn {
+    color: #fff; text-decoration: none; border: 1px solid rgba(255,255,255,.5);
+    padding: 9px 20px; border-radius: 10px; font-size: 13.5px; background: rgba(255,255,255,.12);
+  }
+  .back-btn:hover { background: rgba(255,255,255,.25); }
+
+  .toolbar { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 18px; align-items: center; }
+  .chip {
+    border: 1px solid var(--line); background: var(--card); color: var(--ink-2);
+    padding: 7px 16px; border-radius: 99px; font-size: 13px; cursor: pointer; font-family: inherit;
+  }
+  .chip.on { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .search {
+    margin-left: auto; border: 1px solid var(--line); border-radius: 10px; padding: 8px 14px;
+    font-size: 13.5px; width: 240px; background: var(--card); outline: none; font-family: inherit;
+  }
+  .search:focus { border-color: var(--accent); }
+  .statline { margin-top: 14px; font-size: 13px; color: var(--ink-2); }
+  .statline b { color: var(--ink); }
+
+  .pcard { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 24px 26px; margin-top: 16px; }
+  .pcard-head { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+  .pcard-head .date { font-size: 13px; color: var(--ink-3); white-space: nowrap; }
+  .pcard-head h3 { font-size: 17px; }
+  .pill { display: inline-block; padding: 3px 12px; border-radius: 99px; font-size: 12px; font-weight: 500; white-space: nowrap; }
+  .tag-wait { margin-left: auto; font-size: 11.5px; color: var(--amber); background: var(--amber-soft); padding: 3px 12px; border-radius: 99px; }
+  .sec { margin-top: 14px; }
+  .sec .lab { font-size: 12px; color: var(--ink-3); font-weight: 600; letter-spacing: .5px; margin-bottom: 5px; }
+  .sec p { font-size: 13.8px; line-height: 1.85; color: var(--ink-2); }
+  .sec ul { list-style: none; }
+  .sec li { font-size: 13.8px; line-height: 1.85; color: var(--ink-2); padding-left: 16px; position: relative; }
+  .sec li::before { content: "·"; position: absolute; left: 2px; color: var(--accent); font-weight: 700; }
+  .skills-chips { display: flex; gap: 8px; flex-wrap: wrap; }
+  .sk { background: var(--accent-soft); color: var(--accent); font-size: 12.5px; padding: 4px 12px; border-radius: 99px; }
+  .interview { background: #fbfaf5; border: 1px dashed #e8dfc0; border-radius: 12px; padding: 14px 18px; margin-top: 14px; }
+  .interview .lab { font-size: 12px; color: var(--amber); font-weight: 700; letter-spacing: .5px; }
+  .interview p, .interview li { font-size: 13.3px; line-height: 1.85; color: var(--ink-2); }
+  details.raw { margin-top: 12px; }
+  details.raw summary { font-size: 12.5px; color: var(--ink-3); cursor: pointer; }
+  details.raw p { font-size: 13px; color: var(--ink-3); line-height: 1.8; margin-top: 6px; white-space: pre-wrap; }
+  .empty { text-align: center; color: var(--ink-3); font-size: 14px; padding: 60px 0; line-height: 2.2; background: var(--card); border: 1px solid var(--line); border-radius: 16px; margin-top: 18px; }
+  .empty a { color: var(--accent); }
+  footer { margin-top: 40px; text-align: center; font-size: 12px; color: var(--ink-3); }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="hero">
+    <div>
+      <h1>📁 项目复盘档案</h1>
+      <p>所有做过的项目 · 归纳整理 · 面试可直接引用 —— 面试前翻这一页就够</p>
+    </div>
+    <a class="back-btn" href="index.html">← 返回技能树仪表盘</a>
+  </div>
+
+  <div class="toolbar" id="chips"></div>
+  <div class="statline" id="statline"></div>
+
+  <div id="list"></div>
+
+  <footer>数据经 WorkBuddy 提炼归类 · 每次处理新记录后自动更新</footer>
+</div>
+
+<script>
+const BIN_ID = "6aeff76eac6210605a7696a8";
+const ACCESS_KEY = "$2a$10$Trf1IG3tMoq.s9XiUTYE5eC4N8r0rUvGWTE.H1pzMMJPjxOJjs/Xm";
+const API = "https://api.jsonbin.io/v3/b/" + BIN_ID;
+const HDR = { "Content-Type": "application/json", "X-Access-Key": ACCESS_KEY };
+
+const DOMAIN_COLORS = {
+  "支付与清算": ["#eaf1fe","#2563eb"], "交易与资本市场": ["#f1ebfd","#7c3aed"],
+  "风险与合规": ["#fdecec","#dc2626"], "财富管理": ["#e6f6f4","#0d9488"],
+  "核心系统": ["#fdf3e3","#d97706"], "数据与报表": ["#eaf2e2","#4d7c0f"],
+  "其他": ["#f0f1f4","#5a6478"]
+};
+
+let ALL = [], filterDomain = "全部", keyword = "";
+
+function pill(domain) {
+  const c = DOMAIN_COLORS[domain] || DOMAIN_COLORS["其他"];
+  return `<span class="pill" style="background:${c[0]};color:${c[1]}">${domain}</span>`;
+}
+
+function renderChips() {
+  const domains = ["全部", ...new Set(ALL.filter(p=>p.domain).map(p => p.domain))];
+  document.getElementById("chips").innerHTML = domains.map(d =>
+    `<button class="chip ${d===filterDomain?"on":""}" onclick="setFilter('${d}')">${d}</button>`).join("")
+    + `<input class="search" placeholder="🔍 搜索项目关键词…" oninput="setKeyword(this.value)">`;
+}
+function setFilter(d){ filterDomain = d; render(); }
+function setKeyword(k){ keyword = k.trim().toLowerCase(); render(); }
+
+function render() {
+  const processed = ALL.filter(p => p.processed && p.domain);
+  const list = document.getElementById("list");
+  renderChips();
+  document.getElementById("statline").innerHTML =
+    `共记录 <b>${ALL.length}</b> 个项目 · 已归纳 <b>${processed.length}</b> 个 · 涉及 <b>${new Set(processed.map(p=>p.domain)).size}</b> 个业务域`;
+
+  let shown = ALL.slice().reverse();
+  if (filterDomain !== "全部") shown = shown.filter(p => p.domain === filterDomain);
+  if (keyword) shown = shown.filter(p => JSON.stringify(p).toLowerCase().includes(keyword));
+
+  if (!ALL.length) {
+    list.innerHTML = `<div class="empty"><b>档案还是空的。</b><br>去<a href="index.html">技能树仪表盘</a>的「记录今日工作」提交你的第一个项目，<br>WorkBuddy 提炼归类后，这里就会出现完整的项目档案和面试讲法。</div>`;
+    return;
+  }
+
+  list.innerHTML = shown.map(p => {
+    if (!p.processed || !p.domain) {
+      return `<div class="pcard">
+        <div class="pcard-head"><span class="date">${p.date}</span><h3>${p.title || "(未命名)"}</h3><span class="tag-wait">待提炼 · 等待 WorkBuddy 归类</span></div>
+        <div class="sec"><p>${(p.text||"").replace(/</g,"&lt;")}</p></div>
+      </div>`;
+    }
+    const iv = p.interview || {};
+    return `<div class="pcard">
+      <div class="pcard-head"><span class="date">${p.date}</span><h3>${p.title}</h3>${pill(p.domain)}</div>
+      ${p.background ? `<div class="sec"><div class="lab">业务背景</div><p>${p.background}</p></div>` : ""}
+      <div class="sec"><div class="lab">我做了什么</div><ul>${(p.actions||[]).map(a=>`<li>${a}</li>`).join("")}</ul></div>
+      ${(p.outputs&&p.outputs.length)?`<div class="sec"><div class="lab">产出物</div><ul>${p.outputs.map(o=>`<li>${o}</li>`).join("")}</ul></div>`:""}
+      ${(p.skills&&p.skills.length)?`<div class="sec"><div class="lab">用到的技能</div><div class="skills-chips">${p.skills.map(s=>`<span class="sk">${s}</span>`).join("")}</div></div>`:""}
+      ${iv.star ? `<div class="interview"><div class="lab">🎤 面试这样讲（STAR）</div>
+        <p><b>S 情境：</b>${iv.star.s||"-"}</p>
+        <p><b>T 任务：</b>${iv.star.t||"-"}</p>
+        <p><b>A 行动：</b>${iv.star.a||"-"}</p>
+        <p><b>R 结果：</b>${iv.star.r||"-"}</p></div>`:""}
+      ${(iv.questions&&iv.questions.length)?`<div class="interview"><div class="lab">⚠️ 面试官可能追问</div><ul>${iv.questions.map(q=>`<li>${q}</li>`).join("")}</ul></div>`:""}
+      ${(p.text)?`<details class="raw"><summary>查看原始记录</summary><p>${p.text.replace(/</g,"&lt;")}</p></details>`:""}
+    </div>`;
+  }).join("");
+}
+
+async function load() {
+  try {
+    const r = await fetch(API + "/latest", { headers: HDR });
+    const j = await r.json();
+    ALL = (j.record.entries || []).slice().reverse();
+  } catch (e) {
+    ALL = [];
+  }
+  render();
+}
+load();
+</script>
+</body>
+</html>
