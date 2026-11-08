@@ -93,6 +93,34 @@
   }
   .empty b { color: var(--ink-2); }
 
+  /* ===== Input form ===== */
+  .form-card { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 24px; }
+  .form-grid { display: grid; grid-template-columns: 160px 1fr; gap: 12px; }
+  .form-grid label { font-size: 13px; color: var(--ink-2); display: flex; align-items: center; padding-top: 10px; }
+  .form-grid input, .form-grid textarea {
+    width: 100%; border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px;
+    font-size: 14px; font-family: inherit; color: var(--ink); background: #fafbfd; outline: none;
+  }
+  .form-grid input:focus, .form-grid textarea:focus { border-color: var(--accent); background: #fff; }
+  .form-grid textarea { min-height: 96px; resize: vertical; line-height: 1.7; }
+  .form-foot { margin-top: 14px; display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+  .btn {
+    background: var(--accent); color: #fff; border: none; border-radius: 10px;
+    padding: 10px 26px; font-size: 14px; font-weight: 600; cursor: pointer; font-family: inherit;
+  }
+  .btn:hover { background: #1d4ed8; }
+  .btn[disabled] { opacity: .6; cursor: wait; }
+  .form-status { font-size: 13px; }
+  .form-status.ok { color: var(--teal); }
+  .form-status.err { color: var(--rose); }
+
+  .pending-list { margin-top: 16px; border-top: 1px dashed var(--line); padding-top: 14px; }
+  .pending-item { display: flex; gap: 10px; padding: 8px 0; font-size: 13px; align-items: baseline; }
+  .pending-item .pd { color: var(--ink-3); white-space: nowrap; }
+  .pending-item .pt { color: var(--ink); font-weight: 500; }
+  .pending-item .ps { margin-left: auto; font-size: 11.5px; color: var(--amber); background: var(--amber-soft); padding: 2px 10px; border-radius: 99px; white-space: nowrap; }
+  .pending-item .ps.done { color: var(--teal); background: var(--teal-soft); }
+
   footer { margin-top: 40px; text-align: center; font-size: 12px; color: var(--ink-3); }
   @media (max-width: 760px) {
     .stats { grid-template-columns: repeat(2, 1fr); }
@@ -113,6 +141,28 @@
   </div>
 
   <div class="stats" id="stats"></div>
+
+  <div class="section">
+    <div class="section-head">
+      <h2>✍️ 记录今日工作</h2>
+      <span class="hint">大白话描述即可 · 提交后由 WorkBuddy 提炼归类并点亮技能树</span>
+    </div>
+    <div class="form-card">
+      <div class="form-grid">
+        <label>日期</label>
+        <input type="date" id="f-date">
+        <label>项目 / 任务</label>
+        <input type="text" id="f-title" placeholder="例如：FPS 转账对账问题排查会">
+        <label>我做了什么</label>
+        <textarea id="f-text" placeholder="口语化描述即可，例如：&#10;早上和 Ops 开会对 FPS 转账对账差异，确认了是 T+1 的时点问题；下午写了一版 FRD 1.2，新增了三个 user story；顺手跑了两个 SQL 验证数据"></textarea>
+      </div>
+      <div class="form-foot">
+        <button class="btn" id="f-submit" onclick="submitEntry()">提交记录</button>
+        <span class="form-status" id="f-status"></span>
+      </div>
+      <div class="pending-list" id="pending"></div>
+    </div>
+  </div>
 
   <div class="section">
     <div class="section-head">
@@ -218,6 +268,67 @@ const DATA = {
 };
 
 // ============================================================
+// 云端记录区 —— JSONBin
+// ============================================================
+const BIN_ID = "6aeff76eac6210605a7696a8";
+const ACCESS_KEY = "$2a$10$Trf1IG3tMoq.s9XiUTYE5eC4N8r0rUvGWTE.H1pzMMJPjxOJjs/Xm";
+const API = "https://api.jsonbin.io/v3/b/" + BIN_ID;
+const HDR = { "Content-Type": "application/json", "X-Access-Key": ACCESS_KEY };
+
+async function binGet() {
+  const r = await fetch(API + "/latest", { headers: HDR });
+  if (!r.ok) throw new Error("读取失败 (" + r.status + ")");
+  const j = await r.json();
+  return j.record.entries || [];
+}
+async function binSave(entries) {
+  const r = await fetch(API, { method: "PUT", headers: HDR, body: JSON.stringify({ entries }) });
+  if (!r.ok) throw new Error("保存失败 (" + r.status + ")");
+  return true;
+}
+
+async function submitEntry() {
+  const btn = $("#f-submit"), st = $("#f-status");
+  const date = $("#f-date").value || new Date().toISOString().slice(0, 10);
+  const title = $("#f-title").value.trim();
+  const text = $("#f-text").value.trim();
+  if (!title && !text) { st.textContent = "请先填写项目或做了什么"; st.className = "form-status err"; return; }
+  btn.disabled = true; st.textContent = "正在提交…"; st.className = "form-status";
+  try {
+    const entries = await binGet();
+    entries.unshift({ date, title: title || "(未命名)", text, submittedAt: new Date().toISOString(), processed: false });
+    await binSave(entries);
+    st.textContent = "✓ 已提交！WorkBuddy 会提炼这条记录并更新技能树"; st.className = "form-status ok";
+    $("#f-title").value = ""; $("#f-text").value = "";
+    renderPending(entries);
+    renderStats();
+  } catch (e) {
+    st.textContent = "✗ " + e.message + "，请检查网络后重试"; st.className = "form-status err";
+  } finally { btn.disabled = false; }
+}
+
+function renderPending(entries) {
+  const box = $("#pending");
+  if (!entries || !entries.length) { box.innerHTML = ""; return; }
+  box.innerHTML = entries.slice(0, 8).map(e => `
+    <div class="pending-item">
+      <span class="pd">${e.date}</span>
+      <span class="pt">${e.title}</span>
+      <span class="ps ${e.processed ? "done" : ""}">${e.processed ? "已归类 ✓" : "待提炼"}</span>
+    </div>`).join("") + (entries.length > 8 ? `<div class="pending-item" style="color:var(--ink-3)"><span class="pd">…</span><span>以及更早的 ${entries.length - 8} 条记录</span></div>` : "");
+}
+
+async function loadPending() {
+  try {
+    const entries = await binGet();
+    renderPending(entries);
+    renderStats(entries);
+  } catch (e) {
+    $("#pending").innerHTML = `<div class="pending-item" style="color:var(--ink-3)"><span>云端记录暂不可达：${e.message}</span></div>`;
+  }
+}
+
+// ============================================================
 // 渲染区
 // ============================================================
 const $ = s => document.querySelector(s);
@@ -227,18 +338,19 @@ function renderMeta() {
   $("#updated").textContent = DATA.updated;
 }
 
-function renderStats() {
+function renderStats(entries) {
   const n = DATA.projects.length;
-  let total = 0, lit = 0, count = 0;
+  const pending = entries ? entries.filter(e => !e.processed).length : 0;
+  let lit = 0, count = 0;
   DATA.branches.forEach(b => b.skills.forEach(s => {
-    total += 5; count++; if (s[1] > 0) lit++;
+    count++; if (s[1] > 0) lit++;
   }));
   const avg = count ? (DATA.branches.reduce((a,b)=>a+b.skills.reduce((x,s)=>x+s[1],0),0)/(count*5)*100).toFixed(0) : 0;
   $("#stats").innerHTML = `
     <div class="stat"><div class="num" style="color:var(--accent)">${n}</div><div class="lbl">已记录项目</div></div>
     <div class="stat"><div class="num" style="color:var(--teal)">${lit} / ${count}</div><div class="lbl">已点亮技能项</div></div>
     <div class="stat"><div class="num" style="color:var(--violet)">${avg}%</div><div class="lbl">技能树点亮率</div></div>
-    <div class="stat"><div class="num" style="color:var(--amber)">${n >= 5 ? "可诊断" : "积累中"}</div><div class="lbl">诊断状态（建议≥5个项目）</div></div>`;
+    <div class="stat"><div class="num" style="color:var(--amber)">${pending}</div><div class="lbl">待提炼记录</div></div>`;
 }
 
 function lvlLabel(l) {
@@ -310,6 +422,8 @@ function renderPaths() {
 }
 
 renderMeta(); renderStats(); renderTree(); renderProjects(); renderAdvice(); renderPaths();
+$("#f-date").value = new Date().toISOString().slice(0, 10);
+loadPending();
 </script>
 </body>
 </html>
