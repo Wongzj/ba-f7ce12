@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>金融IT BA · 职业技能树仪表盘</title>
+<style>
+  :root {
+    --bg: #f5f6f8;
+    --card: #ffffff;
+    --ink: #1c2330;
+    --ink-2: #5a6478;
+    --ink-3: #9aa3b5;
+    --line: #e6e9ef;
+    --accent: #2563eb;
+    --accent-soft: #eaf1fe;
+    --teal: #0d9488;
+    --teal-soft: #e6f6f4;
+    --amber: #d97706;
+    --amber-soft: #fdf3e3;
+    --rose: #dc2626;
+    --rose-soft: #fdecec;
+    --violet: #7c3aed;
+    --violet-soft: #f1ebfd;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: "PingFang SC", "Microsoft YaHei", "Segoe UI", sans-serif;
+    background: var(--bg); color: var(--ink);
+    padding: 32px 20px 64px;
+  }
+  .wrap { max-width: 1080px; margin: 0 auto; }
+
+  /* ===== Hero ===== */
+  .hero {
+    background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 60%, #3b82f6 100%);
+    border-radius: 18px; color: #fff; padding: 34px 36px;
+    display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 18px;
+  }
+  .hero h1 { font-size: 26px; letter-spacing: .5px; }
+  .hero p { margin-top: 8px; font-size: 14px; opacity: .85; }
+  .hero .meta { font-size: 13px; opacity: .8; text-align: right; line-height: 1.7; }
+
+  /* ===== Stats ===== */
+  .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-top: 18px; }
+  .stat {
+    background: var(--card); border-radius: 14px; padding: 18px 20px;
+    border: 1px solid var(--line);
+  }
+  .stat .num { font-size: 28px; font-weight: 700; }
+  .stat .lbl { font-size: 12.5px; color: var(--ink-2); margin-top: 4px; }
+
+  /* ===== Section ===== */
+  .section { margin-top: 30px; }
+  .section-head { display: flex; align-items: baseline; gap: 12px; margin-bottom: 14px; }
+  .section-head h2 { font-size: 19px; }
+  .section-head .hint { font-size: 12.5px; color: var(--ink-3); }
+
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 24px; }
+
+  /* ===== Skill tree ===== */
+  .tree-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .branch { border-radius: 12px; padding: 18px 20px; }
+  .branch h3 { font-size: 15px; display: flex; align-items: center; gap: 8px; }
+  .branch h3 .dot { width: 10px; height: 10px; border-radius: 3px; display: inline-block; }
+  .branch .sub { font-size: 12px; color: var(--ink-2); margin: 4px 0 12px; }
+  .skill-row { display: flex; align-items: center; justify-content: space-between; padding: 7px 0; }
+  .skill-row .name { font-size: 13.5px; color: var(--ink); }
+  .skill-row .name .tag {
+    font-size: 11px; margin-left: 6px; padding: 1px 7px; border-radius: 99px;
+    background: rgba(0,0,0,.05); color: var(--ink-2);
+  }
+  .lvl { display: flex; gap: 4px; align-items: center; }
+  .lvl i { width: 14px; height: 6px; border-radius: 3px; background: var(--line); display: inline-block; }
+  .lvl-note { font-size: 11px; color: var(--ink-3); margin-left: 8px; min-width: 44px; text-align: right; }
+
+  /* ===== Project table ===== */
+  table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  th { text-align: left; padding: 10px 12px; color: var(--ink-2); font-weight: 600; border-bottom: 2px solid var(--line); font-size: 12.5px; white-space: nowrap; }
+  td { padding: 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  tr:last-child td { border-bottom: none; }
+  .pill { display: inline-block; padding: 3px 10px; border-radius: 99px; font-size: 12px; font-weight: 500; white-space: nowrap; }
+
+  /* ===== Advice ===== */
+  .advice-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .advice-item { border-left: 3px solid var(--accent); padding: 12px 16px; background: #fafbfd; border-radius: 0 10px 10px 0; }
+  .advice-item h4 { font-size: 14px; margin-bottom: 6px; }
+  .advice-item p { font-size: 13px; color: var(--ink-2); line-height: 1.75; }
+  .advice-item.warn { border-color: var(--rose); }
+
+  .empty {
+    text-align: center; color: var(--ink-3); font-size: 14px; padding: 36px 0; line-height: 2;
+  }
+  .empty b { color: var(--ink-2); }
+
+  footer { margin-top: 40px; text-align: center; font-size: 12px; color: var(--ink-3); }
+  @media (max-width: 760px) {
+    .stats { grid-template-columns: repeat(2, 1fr); }
+    .tree-grid, .advice-grid { grid-template-columns: 1fr; }
+    .hero .meta { text-align: left; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="hero">
+    <div>
+      <h1>金融IT BA · 职业技能树</h1>
+      <p>香港市场 · Business Analyst 个人成长仪表盘 —— 每天记录项目，持续点亮技能</p>
+    </div>
+    <div class="meta" id="meta"></div>
+  </div>
+
+  <div class="stats" id="stats"></div>
+
+  <div class="section">
+    <div class="section-head">
+      <h2>🧭 技能树</h2>
+      <span class="hint">等级 0–5：0 未涉及 · 1 接触过 · 2 在指导下完成 · 3 独立完成 · 4 熟练并可指导他人 · 5 领域专家</span>
+    </div>
+    <div class="tree-grid" id="tree"></div>
+  </div>
+
+  <div class="section">
+    <div class="section-head">
+      <h2>📋 项目记录</h2>
+      <span class="hint">每次输入的项目会被提炼并归类到金融IT职能框架</span>
+    </div>
+    <div class="card" id="projects"></div>
+  </div>
+
+  <div class="section">
+    <div class="section-head">
+      <h2>🔍 诊断与批判性建议</h2>
+      <span class="hint">基于全部输入 · 按香港金融IT市场标准评估</span>
+    </div>
+    <div class="card" id="advice"></div>
+  </div>
+
+  <div class="section">
+    <div class="section-head">
+      <h2>🛤️ 可能的职业路径</h2>
+      <span class="hint">当你积累到一定阶段，这里会标出最适合你的方向</span>
+    </div>
+    <div class="card" id="paths"></div>
+  </div>
+
+  <footer>由 WorkBuddy 维护 · 数据随每次项目输入更新 · 上次更新：<span id="updated"></span></footer>
+</div>
+
+<script>
+// ============================================================
+// 数据区 —— 每次用户输入项目后由 WorkBuddy 更新此对象
+// ============================================================
+const DATA = {
+  owner: "金融IT Business Analyst（香港）",
+  updated: "2026-11-08",
+  projects: [],
+  // skills: [name, level(0-5), note]
+  branches: [
+    {
+      title: "业务领域知识", color: "#2563eb", soft: "#eaf1fe",
+      sub: "金融IT里「懂什么业务」决定你能坐哪张桌子",
+      skills: [
+        ["支付与清算", 0, ""],
+        ["交易与资本市场", 0, ""],
+        ["风险管理与合规", 0, ""],
+        ["财富管理 / 私人银行", 0, ""],
+        ["核心银行 / 账务", 0, ""],
+        ["数据与监管报表", 0, ""]
+      ]
+    },
+    {
+      title: "BA 核心能力", color: "#0d9488", soft: "#e6f6f4",
+      sub: "这是BA的看家本领，也是面试和晋升的核心考察面",
+      skills: [
+        ["需求获取与访谈", 0, ""],
+        ["BRD / FRD / 用户故事", 0, ""],
+        ["流程建模 (BPMN/UML)", 0, ""],
+        ["UAT 与验收测试", 0, ""],
+        ["敏捷协作 (Scrum)", 0, ""],
+        ["范围与优先级管理", 0, ""]
+      ]
+    },
+    {
+      title: "技术与工具", color: "#7c3aed", soft: "#f1ebfd",
+      sub: "不要求像开发一样深，但要能听懂、能验证、能自查",
+      skills: [
+        ["SQL 与数据查询", 0, ""],
+        ["API / 系统集成理解", 0, ""],
+        ["Python / 自动化", 0, ""],
+        ["数据可视化", 0, ""],
+        ["Jira / Confluence / ADO", 0, ""],
+        ["AI 工具提效", 0, ""]
+      ]
+    },
+    {
+      title: "职场软实力", color: "#d97706", soft: "#fdf3e3",
+      sub: "香港环境下英文能力与跨文化沟通权重极高",
+      skills: [
+        ["干系人管理", 0, ""],
+        ["英文文档与会议", 0, ""],
+        ["演示与汇报", 0, ""],
+        ["跨部门协调推动", 0, ""],
+        ["主动性 / 所有权", 0, ""],
+        ["向上管理与谈判", 0, ""]
+      ]
+    }
+  ],
+  advice: [],
+  paths: [
+    { name: " Senior BA → Product Owner", desc: "最主流路径：深耕某一业务域（如支付/风控），主导需求与产品方向", fit: null },
+    { name: "业务咨询 / Domain Expert", desc: "面向银行客户的顾问路线，重业务洞察与方案设计", fit: null },
+    { name: "数据方向 (Data Analyst / BI)", desc: "如果你的项目集中在数据、报表、SQL，可转向数据岗", fit: null },
+    { name: "项目经理 (PM / Delivery)", desc: "偏向交付管理路线，重协调与推进能力", fit: null }
+  ]
+};
+
+// ============================================================
+// 渲染区
+// ============================================================
+const $ = s => document.querySelector(s);
+
+function renderMeta() {
+  $("#meta").innerHTML = `${DATA.owner}<br>最近更新：${DATA.updated}`;
+  $("#updated").textContent = DATA.updated;
+}
+
+function renderStats() {
+  const n = DATA.projects.length;
+  let total = 0, lit = 0, count = 0;
+  DATA.branches.forEach(b => b.skills.forEach(s => {
+    total += 5; count++; if (s[1] > 0) lit++;
+  }));
+  const avg = count ? (DATA.branches.reduce((a,b)=>a+b.skills.reduce((x,s)=>x+s[1],0),0)/(count*5)*100).toFixed(0) : 0;
+  $("#stats").innerHTML = `
+    <div class="stat"><div class="num" style="color:var(--accent)">${n}</div><div class="lbl">已记录项目</div></div>
+    <div class="stat"><div class="num" style="color:var(--teal)">${lit} / ${count}</div><div class="lbl">已点亮技能项</div></div>
+    <div class="stat"><div class="num" style="color:var(--violet)">${avg}%</div><div class="lbl">技能树点亮率</div></div>
+    <div class="stat"><div class="num" style="color:var(--amber)">${n >= 5 ? "可诊断" : "积累中"}</div><div class="lbl">诊断状态（建议≥5个项目）</div></div>`;
+}
+
+function lvlLabel(l) {
+  return ["未涉及","接触过","指导下完成","独立完成","可指导他人","领域专家"][l];
+}
+
+function renderTree() {
+  $("#tree").innerHTML = DATA.branches.map(b => `
+    <div class="branch" style="background:${b.soft}">
+      <h3><span class="dot" style="background:${b.color}"></span>${b.title}</h3>
+      <div class="sub">${b.sub}</div>
+      ${b.skills.map(s => `
+        <div class="skill-row">
+          <span class="name">${s[0]}</span>
+          <span class="lvl">
+            ${Array.from({length:5},(_,i)=>`<i style="${i<s[1]?`background:${b.color}`:""}"></i>`).join("")}
+            <span class="lvl-note">${s[1]===0?"—":lvlLabel(s[1])}</span>
+          </span>
+        </div>`).join("")}
+    </div>`).join("");
+}
+
+const DOMAIN_COLORS = {
+  "支付与清算": ["#eaf1fe","#2563eb"], "交易与资本市场": ["#f1ebfd","#7c3aed"],
+  "风险与合规": ["#fdecec","#dc2626"], "财富管理": ["#e6f6f4","#0d9488"],
+  "核心系统": ["#fdf3e3","#d97706"], "数据与报表": ["#e8f0e8","#4d7c0f"],
+  "其他": ["#f0f1f4","#5a6478"]
+};
+
+function renderProjects() {
+  if (!DATA.projects.length) {
+    $("#projects").innerHTML = `<div class="empty"><b>还没有记录。</b><br>从今天开始：把今天做过的项目/任务发给我（口语化描述即可），<br>我会提炼你的产出、归类到金融IT领域，并点亮对应的技能树节点。</div>`;
+    return;
+  }
+  $("#projects").innerHTML = `<table>
+    <tr><th>日期</th><th>项目 / 任务</th><th>金融IT领域</th><th>我的产出</th><th>点亮技能</th></tr>
+    ${DATA.projects.map(p => {
+      const c = DOMAIN_COLORS[p.domain] || DOMAIN_COLORS["其他"];
+      return `<tr>
+        <td style="white-space:nowrap;color:var(--ink-2)">${p.date}</td>
+        <td><b>${p.name}</b>${p.desc?`<div style="font-size:12.5px;color:var(--ink-2);margin-top:4px;line-height:1.7">${p.desc}</div>`:""}</td>
+        <td><span class="pill" style="background:${c[0]};color:${c[1]}">${p.domain}</span></td>
+        <td style="line-height:1.8">${p.outputs.map(o=>"· "+o).join("<br>")}</td>
+        <td style="color:var(--ink-2);font-size:12.5px;line-height:1.8">${p.skills.map(s=>"✦ "+s).join("<br>")}</td>
+      </tr>`;
+    }).join("")}</table>`;
+}
+
+function renderAdvice() {
+  if (!DATA.advice.length) {
+    $("#advice").innerHTML = `<div class="empty">等你输入 <b>3–5 个项目</b> 后，我会给出第一份批判性诊断：<br>指出技能树的结构性短板、与香港市场同级别 BA 的差距、以及下一步最值得投入的方向。</div>`;
+    return;
+  }
+  $("#advice").innerHTML = `<div class="advice-grid">${DATA.advice.map(a => `
+    <div class="advice-item ${a.type||""}">
+      <h4>${a.title}</h4><p>${a.body}</p>
+    </div>`).join("")}</div>`;
+}
+
+function renderPaths() {
+  $("#paths").innerHTML = `<table>
+    <tr><th>路径</th><th>说明</th><th>匹配度</th></tr>
+    ${DATA.paths.map(p => `
+    <tr>
+      <td><b>${p.name}</b></td>
+      <td style="color:var(--ink-2);line-height:1.7">${p.desc}</td>
+      <td>${p.fit===null?'<span style="color:var(--ink-3)">待评估</span>':`<span class="pill" style="background:var(--accent-soft);color:var(--accent)">${p.fit}</span>`}</td>
+    </tr>`).join("")}</table>`;
+}
+
+renderMeta(); renderStats(); renderTree(); renderProjects(); renderAdvice(); renderPaths();
+</script>
+</body>
+</html>
