@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>简历素材库 · 把维护字段写成数据治理</title>
+<style>
+  :root {
+    --bg:#f5f6f8; --card:#fff; --ink:#1c2330; --ink-2:#5a6478; --ink-3:#9aa3b5;
+    --line:#e6e9ef; --accent:#2563eb; --accent-soft:#eaf1fe; --teal:#0d9488; --teal-soft:#e6f6f4;
+    --amber:#d97706; --amber-soft:#fdf3e3; --rose:#dc2626; --rose-soft:#fdecec;
+    --violet:#6d28d9; --violet-soft:#f1ecfe;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:"PingFang SC","Microsoft YaHei","Segoe UI",sans-serif;background:var(--bg);color:var(--ink);padding:32px 20px 64px;line-height:1.7}
+  .wrap{max-width:1080px;margin:0 auto}
+  .hero{background:linear-gradient(135deg,#064e3b 0%,#0f766e 55%,#14b8a6 100%);border-radius:18px;color:#fff;padding:30px 36px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px}
+  .hero h1{font-size:24px}
+  .hero p{margin-top:8px;font-size:14px;opacity:.92;max-width:640px}
+  .hero-links{display:flex;gap:10px;flex-wrap:wrap}
+  .back-btn{color:#fff;text-decoration:none;border:1px solid rgba(255,255,255,.5);padding:9px 18px;border-radius:10px;font-size:13.5px;background:rgba(255,255,255,.12);white-space:nowrap}
+  .back-btn:hover{background:rgba(255,255,255,.25)}
+  .section{margin-top:28px}
+  .section-head{display:flex;align-items:baseline;gap:12px;margin-bottom:14px;flex-wrap:wrap}
+  .section-head h2{font-size:19px}
+  .section-head .hint{font-size:12.5px;color:var(--ink-3)}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:24px}
+  .lead{font-size:14.2px;color:var(--ink-2);line-height:1.9}
+  .lead b{color:var(--ink)}
+
+  /* 数字盘 */
+  .nums{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-top:4px}
+  .num-item label{display:block;font-size:12.2px;color:var(--ink-2);margin-bottom:5px;line-height:1.5}
+  .num-item input{width:100%;border:1px solid var(--line);border-radius:9px;padding:8px 11px;font-size:13.5px;font-family:inherit;color:var(--ink);background:#fafbfd;outline:none}
+  .num-item input:focus{border-color:var(--teal);background:#fff}
+  .nums-foot{margin-top:14px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;font-size:12.5px;color:var(--ink-3)}
+  .ghost-btn{background:#fff;border:1px solid var(--line);border-radius:9px;padding:6px 14px;font-size:12.5px;cursor:pointer;font-family:inherit;color:var(--ink-2)}
+  .ghost-btn:hover{border-color:var(--teal);color:var(--teal)}
+
+  /* 经历卡 */
+  .exp{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:22px 24px;margin-bottom:16px}
+  .exp-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+  .exp-head h3{font-size:16.5px}
+  .exp-head .meta{font-size:12.2px;color:var(--ink-3);margin-top:4px}
+  .badge{font-size:11.5px;padding:3px 10px;border-radius:99px;white-space:nowrap}
+  .b-strong{background:var(--teal-soft);color:var(--teal)}
+  .b-mid{background:var(--amber-soft);color:var(--amber)}
+  .b-weak{background:var(--rose-soft);color:var(--rose)}
+  .lbl{font-size:11.8px;color:var(--ink-3);letter-spacing:.4px;margin:16px 0 7px}
+  .bullets{font-size:13.8px;color:var(--ink-2);line-height:1.95}
+  .bullets li{margin-left:18px;margin-bottom:6px}
+  .bullets li::marker{color:var(--teal)}
+  .en{font-family:"Segoe UI",sans-serif;font-size:13.2px;line-height:1.9}
+  .v{color:var(--accent);font-weight:600;background:var(--accent-soft);padding:0 5px;border-radius:5px;font-style:normal}
+  .kw{display:flex;gap:7px;flex-wrap:wrap;margin-top:6px}
+  .kw span{font-size:11.8px;padding:3px 10px;border-radius:99px;background:#f2f4f8;color:var(--ink-2)}
+  .note{margin-top:14px;font-size:12.6px;color:var(--ink-2);background:#fbfbf7;border-left:3px solid var(--amber);padding:9px 13px;border-radius:0 8px 8px 0;line-height:1.8}
+  .copy-btn{background:#fff;border:1px solid var(--line);border-radius:9px;padding:6px 14px;font-size:12.5px;cursor:pointer;font-family:inherit;color:var(--ink-2)}
+  .copy-btn:hover{border-color:var(--teal);color:var(--teal)}
+  .row-foot{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+
+  /* 整段 */
+  .block{background:#fbfaf5;border:1px dashed #e8dfc0;border-radius:12px;padding:18px 20px;font-size:13.5px;line-height:1.95;color:var(--ink-2)}
+  .block b{color:var(--ink)}
+  .block .hd{font-size:13px;color:var(--ink);font-weight:600;margin-bottom:6px}
+
+  /* 表 */
+  table{width:100%;border-collapse:collapse;font-size:13.2px}
+  th{text-align:left;padding:11px 12px;color:var(--ink-2);font-weight:600;border-bottom:2px solid var(--line);font-size:12.5px;white-space:nowrap}
+  td{padding:11px 12px;border-bottom:1px solid var(--line);vertical-align:top;line-height:1.8}
+  tr:last-child td{border-bottom:none}
+  .yes{color:var(--teal)} .no{color:var(--rose)}
+
+  /* 三步 */
+  .steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
+  .step{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px 20px}
+  .step .n{font-size:11.5px;color:#fff;background:var(--teal);width:22px;height:22px;border-radius:99px;display:flex;align-items:center;justify-content:center;font-weight:600;margin-bottom:10px}
+  .step h4{font-size:14px;margin-bottom:6px}
+  .step p{font-size:12.8px;color:var(--ink-2);line-height:1.8}
+
+  .footer-note{margin-top:26px;font-size:12.5px;color:var(--ink-3);text-align:center;line-height:1.9}
+  @media (max-width:760px){ body{padding:20px 14px 48px} .hero{padding:24px 22px} }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="hero">
+    <div>
+      <h1>📝 简历素材库</h1>
+      <p>同一段经历，写成「维护字段」没人问，写成「元数据治理 + 变更控制」会被追着问。先把数字填上，再复制走。</p>
+    </div>
+    <div class="hero-links">
+      <a class="back-btn" href="value.html">🧩 平台价值说明</a>
+      <a class="back-btn" href="index.html">← 返回仪表盘</a>
+    </div>
+  </div>
+
+  <!-- 数字盘 -->
+  <div class="section">
+    <div class="card">
+      <div class="section-head" style="margin-bottom:12px">
+        <h2 style="font-size:15px">① 先填数字（填一次，全页自动替换）</h2>
+        <span class="hint">填不准就填大概，但一定要填 —— 没有数字的简历条目等于没写</span>
+      </div>
+      <div class="nums">
+        <div class="num-item"><label>业务属性数量（业务元数据）</label><input data-key="bizAttr" placeholder="例：120"></div>
+        <div class="num-item"><label>源系统表数量（技术元数据）</label><input data-key="tblCount" placeholder="例：35"></div>
+        <div class="num-item"><label>覆盖源系统个数</label><input data-key="sysCount" placeholder="例：8"></div>
+        <div class="num-item"><label>B2T 映射条数</label><input data-key="b2tCount" placeholder="例：180"></div>
+        <div class="num-item"><label>参与过的版本/迭代数</label><input data-key="relCount" placeholder="例：6"></div>
+        <div class="num-item"><label>每月字段变更请求数（约）</label><input data-key="reqMonth" placeholder="例：15"></div>
+        <div class="num-item"><label>识别出的重复/冲突字段数</label><input data-key="dupCount" placeholder="做了才填"></div>
+        <div class="num-item"><label>监管报送 Batch 作业数</label><input data-key="batchCount" placeholder="例：4"></div>
+      </div>
+      <div class="nums-foot">
+        <span id="fill-status">已填 0 / 8</span>
+        <button class="ghost-btn" onclick="clearAll()">清空重填</button>
+        <span>数字只存在你这台浏览器里（localStorage），不上传任何地方</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 用法 -->
+  <div class="section">
+    <div class="section-head">
+      <h2>② 怎么用这页</h2>
+      <span class="hint">三步，十分钟</span>
+    </div>
+    <div class="steps">
+      <div class="step">
+        <div class="n">1</div>
+        <h4>把数字填准</h4>
+        <p>不知道确切数字就去平台上数一下：业务属性多少条、映射多少条、覆盖几个系统。这些是你唯一的硬资产。</p>
+      </div>
+      <div class="step">
+        <div class="n">2</div>
+        <h4>挑条目，别全抄</h4>
+        <p>一条简历最多 3–4 个 bullet。中文投中资行，英文投外资行/猎头。每条只保留「动作 + 规模 + 结果」。</p>
+      </div>
+      <div class="step">
+        <div class="n">3</div>
+        <h4>守住红线</h4>
+        <p>「做了才能写」那一栏现在还不能用。等你完成那三个动作、有台账为证，再把它加进去。</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 经历一 -->
+  <div class="section">
+    <div class="section-head">
+      <h2>③ 经历条目</h2>
+      <span class="hint">按你的真实工作提炼 · 蓝色高亮是待填数字</span>
+    </div>
+
+    <div class="exp">
+      <div class="exp-head">
+        <div>
+          <h3>EDP 监管报送数据平台 · 数据链路梳理</h3>
+          <div class="meta">监管报送 / 数据与报表 · 中资银行香港 · 2026</div>
+        </div>
+        <span class="badge b-mid">证据强度：中（理解深，缺正式交付物）</span>
+      </div>
+
+      <div class="lbl">中文 bullet</div>
+      <ul class="bullets" id="cn-1">
+        <li>梳理 EDP 监管报送平台端到端数据链路（源系统 → 加工层 → <span class="v" data-k="batchCount" data-ph="[N]">[N]</span> 个 Batch 作业 → 报送报表），明确各环节的输入输出、依赖关系与失败影响面。</li>
+        <li>拆解 RWA / CAR 等核心报送指标的计算口径与数据来源，定位指标数值与底层数据表之间的耦合点，为报送差异分析提供依据。</li>
+        <li>整理监管报送数据流与 BCBS239 数据可追溯要求的对应关系，识别当前链路中血缘断点与人工干预环节。</li>
+      </ul>
+      <div class="row-foot"><button class="copy-btn" onclick="copyEl('cn-1',this)">复制中文条目</button></div>
+
+      <div class="lbl">English bullets</div>
+      <ul class="bullets en" id="en-1">
+        <li>Mapped the end-to-end data flow of the EDP regulatory reporting platform — source systems, transformation layers, <span class="v" data-k="batchCount" data-ph="[N]">[N]</span> batch jobs and downstream reporting — clarifying inputs, outputs, dependencies and failure impact at each stage.</li>
+        <li>Decomposed the calculation logic and data sources of core reported metrics (RWA, CAR), identifying coupling points between reported figures and underlying tables to support variance analysis.</li>
+        <li>Documented the alignment between the reporting data flow and BCBS239 traceability requirements, highlighting lineage gaps and manual touchpoints.</li>
+      </ul>
+      <div class="row-foot"><button class="copy-btn" onclick="copyEl('en-1',this)">Copy English</button></div>
+
+      <div class="lbl">ATS 关键词</div>
+      <div class="kw"><span>Regulatory Reporting</span><span>RWA</span><span>CAR</span><span>BCBS239</span><span>Data Lineage</span><span>Batch Processing</span><span>Data Flow Analysis</span></div>
+
+      <div class="note">
+        <b>为什么这么写：</b>这条经历目前是「理解层面」，所以动词全部用 mapped / decomposed / documented —— 不写 led、owned、designed。写成「主导搭建」会在面试第二个追问就崩。等你产出正式数据流图后，可以把第一条改成 "Produced the end-to-end data flow map for..."，证据强度直接从「中」变「强」。
+      </div>
+    </div>
+
+    <div class="exp">
+      <div class="exp-head">
+        <div>
+          <h3>DDP 元数据平台 · 业务/技术元数据与 B2T 映射</h3>
+          <div class="meta">数据治理 / 风险数据 · 中资银行香港 · 2026</div>
+        </div>
+        <span class="badge b-strong">证据强度：强（有实际维护职责）</span>
+      </div>
+
+      <div class="lbl">中文 bullet</div>
+      <ul class="bullets" id="cn-2">
+        <li>负责风险条线元数据治理：维护 <span class="v" data-k="bizAttr" data-ph="[X]">[X]</span> 个业务属性与 <span class="v" data-k="tblCount" data-ph="[Y]">[Y]</span> 张源系统表的技术元数据，覆盖 <span class="v" data-k="sysCount" data-ph="[Z]">[Z]</span> 个源系统。</li>
+        <li>建立并维护 <span class="v" data-k="b2tCount" data-ph="[N]">[N]</span> 条业务—技术（B2T）映射，形成字段级数据血缘，支撑风险指标口径统一与 BCBS239 数据可追溯要求。</li>
+        <li>对接业务方与开发团队，在 <span class="v" data-k="relCount" data-ph="[M]">[M]</span> 轮版本迭代中完成元数据变更的录入与核对，保障字段定义、数据来源与映射关系三者一致；平均每月处理约 <span class="v" data-k="reqMonth" data-ph="[K]">[K]</span> 项字段变更请求。</li>
+        <li>维护字段变更台账，记录每次评审的口径、来源、重复与下游影响结论，为季度治理汇报提供数据支撑。</li>
+      </ul>
+      <div class="row-foot"><button class="copy-btn" onclick="copyEl('cn-2',this)">复制中文条目</button></div>
+
+      <div class="lbl">English bullets</div>
+      <ul class="bullets en" id="en-2">
+        <li>Owned metadata governance for the risk data domain: maintained business metadata for <span class="v" data-k="bizAttr" data-ph="[X]">[X]</span> business attributes and technical metadata for <span class="v" data-k="tblCount" data-ph="[Y]">[Y]</span> source-system tables across <span class="v" data-k="sysCount" data-ph="[Z]">[Z]</span> source systems.</li>
+        <li>Built and maintained <span class="v" data-k="b2tCount" data-ph="[N]">[N]</span> business-to-technical (B2T) mappings, establishing field-level data lineage that underpins consistent metric definitions and BCBS239 traceability.</li>
+        <li>Partnered with business stakeholders and engineering across <span class="v" data-k="relCount" data-ph="[M]">[M]</span> release cycles to register and validate metadata changes, ensuring consistency between field definitions, data sources and mappings — handling approximately <span class="v" data-k="reqMonth" data-ph="[K]">[K]</span> change requests per month.</li>
+        <li>Maintained a field change ledger capturing definition, source, duplication and downstream impact for each review, feeding quarterly data governance reporting.</li>
+      </ul>
+      <div class="row-foot"><button class="copy-btn" onclick="copyEl('en-2',this)">Copy English</button></div>
+
+      <div class="lbl">ATS 关键词</div>
+      <div class="kw"><span>Metadata Management</span><span>Data Governance</span><span>Business Glossary</span><span>B2T Mapping</span><span>Data Lineage</span><span>BCBS239</span><span>Impact Analysis</span><span>Stakeholder Alignment</span><span>Data Dictionary</span></div>
+
+      <div class="note">
+        <b>为什么这么写：</b>动词用 owned（有实际维护职责，站得住）、built and maintained、partnered —— 全部是事实。关键是每条都带规模和对象（多少个字段、几个系统、几轮版本），让招聘方一眼看出这不是打杂。<br>
+        <b>有一条现在是「半成品」：</b>最后那条台账，如果你还没开始用 tools.html 记录，就删掉 —— 写了但面试被追问「台账长什么样、给我看一个例子」会露。等有 10 条以上记录再放回来。
+      </div>
+    </div>
+  </div>
+
+  <!-- 升级版 -->
+  <div class="section">
+    <div class="section-head">
+      <h2>④ 升级版条目（做了那三个动作后才可用）</h2>
+      <span class="hint">这一条是你摆脱「执行层」的唯一证据，别提前用</span>
+    </div>
+    <div class="card">
+      <div class="lbl" style="margin-top:0">中文</div>
+      <ul class="bullets">
+        <li>对新增字段执行口径 / 来源 / 重复 / 下游影响四维校验，累计识别 <span class="v" data-k="dupCount" data-ph="[K]">[K]</span> 处重复或口径冲突属性，在开发前完成拦截，减少返工与口径漂移。</li>
+        <li>将字段管理从「按需求录入」推进为「按标准准入」，建立字段评审清单与变更台账，季度向业务与 IT 双方输出元数据健康度数据。</li>
+      </ul>
+      <div class="lbl">English</div>
+      <ul class="bullets en">
+        <li>Validated new field requests against definition, source, duplication and downstream impact, intercepting <span class="v" data-k="dupCount" data-ph="[K]">[K]</span> duplicate or conflicting attributes before build and reducing rework and definition drift.</li>
+        <li>Shifted field management from request-driven data entry to standards-based admission by introducing a field review checklist and change ledger, with quarterly metadata health reporting to business and IT.</li>
+      </ul>
+      <div class="note" style="border-left-color:var(--rose)">
+        <b>启用条件（缺一不可）：</b>① 真的做过至少 10 次四维校验；② 台账里能翻出具体案例；③ 有人（哪怕是你的组长）知道你做了这件事。否则这三条只是自我感觉良好的虚构，面试官两个问题就能戳穿。
+      </div>
+    </div>
+  </div>
+
+  <!-- 整段 -->
+  <div class="section">
+    <div class="section-head">
+      <h2>⑤ 简历 Project 区块（整段可复制）</h2>
+      <span class="hint">适合放在简历「项目经验」里作为一段完整描述</span>
+    </div>
+    <div class="card">
+      <div class="block" id="full-cn">
+        <div class="hd">元数据治理与监管报送数据链路 ｜ 中资银行香港 ｜ 2026</div>
+        负责风险条线 DDP 元数据平台的业务元数据、技术元数据与 B2T 映射维护，覆盖 <span class="v" data-k="bizAttr" data-ph="[X]">[X]</span> 个业务属性、<span class="v" data-k="tblCount" data-ph="[Y]">[Y]</span> 张源系统表、<span class="v" data-k="sysCount" data-ph="[Z]">[Z]</span> 个源系统，累计建立 <span class="v" data-k="b2tCount" data-ph="[N]">[N]</span> 条字段级映射，支撑风险指标口径统一与 BCBS239 数据可追溯要求。参与 <span class="v" data-k="relCount" data-ph="[M]">[M]</span> 轮版本迭代的元数据变更管理，与业务及开发团队对齐字段定义、来源与下游影响；同时梳理 EDP 监管报送平台端到端数据链路（含 <span class="v" data-k="batchCount" data-ph="[Q]">[Q]</span> 个 Batch 作业与 RWA / CAR 报送指标），输出链路说明用于报送异常定位与变更影响评估。
+      </div>
+      <div class="row-foot"><button class="copy-btn" onclick="copyEl('full-cn',this)">复制整段（中文）</button></div>
+
+      <div class="block en" id="full-en" style="margin-top:14px">
+        <div class="hd">Metadata Governance &amp; Regulatory Reporting Data Flow ｜ Corporate Bank, Hong Kong ｜ 2026</div>
+        Owned business and technical metadata plus B2T mappings for the risk data domain on the DDP platform, covering <span class="v" data-k="bizAttr" data-ph="[X]">[X]</span> business attributes, <span class="v" data-k="tblCount" data-ph="[Y]">[Y]</span> source-system tables across <span class="v" data-k="sysCount" data-ph="[Z]">[Z]</span> source systems and <span class="v" data-k="b2tCount" data-ph="[N]">[N]</span> field-level mappings — underpinning consistent risk metric definitions and BCBS239 traceability. Managed metadata changes across <span class="v" data-k="relCount" data-ph="[M]">[M]</span> release cycles, aligning definitions, data sources and downstream impact with business and engineering stakeholders. Additionally mapped the end-to-end data flow of the EDP regulatory reporting platform, including <span class="v" data-k="batchCount" data-ph="[Q]">[Q]</span> batch jobs and key reported metrics (RWA, CAR), producing flow documentation used for incident triage and change impact assessment.
+      </div>
+      <div class="row-foot"><button class="copy-btn" onclick="copyEl('full-en',this)">Copy full paragraph</button></div>
+    </div>
+  </div>
+
+  <!-- 红线 -->
+  <div class="section">
+    <div class="section-head">
+      <h2>⑥ 诚实边界</h2>
+      <span class="hint">写简历最大的风险不是写得不够漂亮，是被追问时接不住</span>
+    </div>
+    <div class="card">
+      <table>
+        <thead><tr><th>措辞</th><th>现在能不能用</th><th>原因</th></tr></thead>
+        <tbody>
+          <tr><td>维护／负责元数据与 B2T 映射</td><td class="yes">✓ 能用</td><td>事实，且是你唯一有实际职责的部分</td></tr>
+          <tr><td>参与 N 轮版本变更、对齐定义与来源</td><td class="yes">✓ 能用</td><td>事实层面的动作描述</td></tr>
+          <tr><td>梳理数据链路、拆解指标口径</td><td class="yes">✓ 能用</td><td>只要你能现场画出那张图就是真的</td></tr>
+          <tr><td>建立了元数据标准／治理流程</td><td class="no">✗ 暂不能用</td><td>标准是别人定的，你执行的是标准</td></tr>
+          <tr><td>主导变更评审、驳回字段申请</td><td class="no">✗ 暂不能用</td><td>没有审批权，写到就是虚构</td></tr>
+          <tr><td>识别 N 处口径冲突并推动解决</td><td class="no">✗ 有台账才可用</td><td>拿不出案例的量化等于自曝</td></tr>
+        </tbody>
+      </table>
+      <p class="lead" style="margin-top:16px">
+        <b>判断标准很简单：</b>如果面试官说「给我看一个例子」，你能不能立刻讲出具体的字段名、具体的人、具体的结论。能，就写；不能，就等能做到再写。
+      </p>
+    </div>
+  </div>
+
+  <p class="footer-note">
+    数字填完记得复制走 —— 这页不会自动同步到任何地方。<br>
+    配套：<a href="value.html" style="color:var(--teal)">平台价值说明</a> ｜ <a href="tools.html" style="color:var(--teal)">字段评审工作台</a> ｜ <a href="projects.html" style="color:var(--teal)">项目复盘档案</a>
+  </p>
+
+</div>
+
+<script>
+var KEYS = ['bizAttr','tblCount','sysCount','b2tCount','relCount','reqMonth','dupCount','batchCount'];
+var saved = {};
+
+try { saved = JSON.parse(localStorage.getItem('resumeVars') || '{}') || {}; } catch (e) { saved = {}; }
+
+function renderVars() {
+  KEYS.forEach(function (k) {
+    var val = (saved[k] || '').toString().trim();
+    document.querySelectorAll('[data-k="' + k + '"]').forEach(function (el) {
+      if (el.tagName === 'INPUT') return;
+      el.textContent = val ? val : (el.getAttribute('data-ph') || '[—]');
+      el.style.opacity = val ? '1' : '.75';
+    });
+  });
+  var filled = KEYS.filter(function (k) { return (saved[k] || '').toString().trim(); }).length;
+  var st = document.getElementById('fill-status');
+  if (st) st.textContent = '已填 ' + filled + ' / ' + KEYS.length;
+}
+
+function bindInputs() {
+  document.querySelectorAll('.num-item input').forEach(function (inp) {
+    var k = inp.getAttribute('data-key');
+    if (saved[k]) inp.value = saved[k];
+    inp.addEventListener('input', function () {
+      saved[k] = inp.value;
+      try { localStorage.setItem('resumeVars', JSON.stringify(saved)); } catch (e) {}
+      renderVars();
+    });
+  });
+}
+
+function clearAll() {
+  saved = {};
+  try { localStorage.removeItem('resumeVars'); } catch (e) {}
+  document.querySelectorAll('.num-item input').forEach(function (i) { i.value = ''; });
+  renderVars();
+}
+
+function copyEl(id, btn) {
+  var el = document.getElementById(id);
+  var text = el.innerText.replace(/\n{3,}/g, '\n\n').trim();
+  var old = btn.innerText;
+  var done = function () { btn.innerText = '已复制 ✓'; setTimeout(function () { btn.innerText = old; }, 1600); };
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(done).catch(fallback);
+  } else { fallback(); }
+  function fallback() {
+    var ta = document.createElement('textarea');
+    ta.value = text; document.body.appendChild(ta); ta.select();
+    try { document.execCommand('copy'); done(); } catch (e) {}
+    document.body.removeChild(ta);
+  }
+}
+
+bindInputs();
+renderVars();
+</script>
+</body>
+</html>
