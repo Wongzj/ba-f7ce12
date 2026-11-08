@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>字段评审工作台 · 五问 + 变更台账</title>
+<style>
+  :root {
+    --bg:#f5f6f8; --card:#fff; --ink:#1c2330; --ink-2:#5a6478; --ink-3:#9aa3b5;
+    --line:#e6e9ef; --accent:#2563eb; --accent-soft:#eaf1fe; --teal:#0d9488; --teal-soft:#e6f6f4;
+    --amber:#d97706; --amber-soft:#fdf3e3; --rose:#dc2626; --rose-soft:#fdecec;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:"PingFang SC","Microsoft YaHei","Segoe UI",sans-serif;background:var(--bg);color:var(--ink);padding:32px 20px 64px}
+  .wrap{max-width:1080px;margin:0 auto}
+  .hero{background:linear-gradient(135deg,#7c2d12 0%,#b45309 55%,#d97706 100%);border-radius:18px;color:#fff;padding:30px 36px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px}
+  .hero h1{font-size:24px}
+  .hero p{margin-top:8px;font-size:14px;opacity:.9}
+  .back-btn{color:#fff;text-decoration:none;border:1px solid rgba(255,255,255,.5);padding:9px 20px;border-radius:10px;font-size:13.5px;background:rgba(255,255,255,.12)}
+  .back-btn:hover{background:rgba(255,255,255,.25)}
+  .section{margin-top:28px}
+  .section-head{display:flex;align-items:baseline;gap:12px;margin-bottom:14px}
+  .section-head h2{font-size:19px}
+  .section-head .hint{font-size:12.5px;color:var(--ink-3)}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:24px}
+
+  /* 五问 */
+  .q-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px}
+  .qcard{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px 20px;position:relative}
+  .qcard .num{position:absolute;top:14px;right:16px;font-size:26px;font-weight:800;color:var(--accent-soft)}
+  .qcard h3{font-size:14.5px;line-height:1.6;padding-right:34px}
+  .qcard .why{font-size:12.5px;color:var(--ink-2);margin-top:8px;line-height:1.8}
+  .qcard .flag{font-size:12px;color:var(--rose);margin-top:8px;background:var(--rose-soft);padding:6px 10px;border-radius:8px;line-height:1.7}
+
+  /* 话术 */
+  .script{background:#fbfaf5;border:1px dashed #e8dfc0;border-radius:12px;padding:18px 20px;font-size:13.8px;line-height:1.9;color:var(--ink-2)}
+  .script b{color:var(--ink)}
+  .copy-btn{margin-top:12px;background:#fff;border:1px solid var(--line);border-radius:9px;padding:7px 16px;font-size:13px;cursor:pointer;font-family:inherit;color:var(--ink-2)}
+  .copy-btn:hover{border-color:var(--accent);color:var(--accent)}
+
+  /* 表单 */
+  .form-grid{display:grid;grid-template-columns:150px 1fr;gap:12px}
+  .form-grid label{font-size:13px;color:var(--ink-2);display:flex;align-items:center;padding-top:10px;line-height:1.5}
+  .form-grid input,.form-grid select,.form-grid textarea{width:100%;border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-size:13.8px;font-family:inherit;color:var(--ink);background:#fafbfd;outline:none}
+  .form-grid input:focus,.form-grid select:focus,.form-grid textarea:focus{border-color:var(--accent);background:#fff}
+  .form-grid textarea{min-height:64px;resize:vertical;line-height:1.7}
+  .form-foot{margin-top:16px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+  .btn{background:var(--accent);color:#fff;border:none;border-radius:10px;padding:10px 26px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit}
+  .btn:hover{background:#1d4ed8}
+  .btn[disabled]{opacity:.6;cursor:wait}
+  .btn.ghost{background:#fff;color:var(--ink-2);border:1px solid var(--line);font-weight:500}
+  .btn.ghost:hover{border-color:var(--accent);color:var(--accent)}
+  .status{font-size:13px}
+  .status.ok{color:var(--teal)}
+  .status.err{color:var(--rose)}
+
+  /* 台账 */
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  th{text-align:left;padding:10px 10px;color:var(--ink-2);font-weight:600;border-bottom:2px solid var(--line);font-size:12px;white-space:nowrap}
+  td{padding:11px 10px;border-bottom:1px solid var(--line);vertical-align:top;line-height:1.7}
+  tr:last-child td{border-bottom:none}
+  .pill{display:inline-block;padding:2px 10px;border-radius:99px;font-size:11.5px;white-space:nowrap}
+  .ok-pill{background:var(--teal-soft);color:var(--teal)}
+  .mid-pill{background:var(--amber-soft);color:var(--amber)}
+  .no-pill{background:var(--rose-soft);color:var(--rose)}
+  .stats{display:flex;gap:26px;margin-bottom:16px;flex-wrap:wrap}
+  .stats div{font-size:13px;color:var(--ink-2)}
+  .stats b{font-size:20px;color:var(--ink);margin-right:4px}
+  .del{cursor:pointer;color:var(--ink-3);font-size:12px}
+  .del:hover{color:var(--rose)}
+  .empty{text-align:center;color:var(--ink-3);font-size:13.5px;padding:36px 0;line-height:2}
+
+  @media print {
+    body{background:#fff;padding:0}
+    .hero,.back-btn,.form-foot,.btn,.copy-btn,.section:nth-of-type(3){display:none}
+    .card{border:none;padding:0}
+    .qcard{page-break-inside:avoid;border:1px solid #ccc}
+  }
+  @media (max-width:760px){
+    .form-grid{grid-template-columns:1fr}
+    .form-grid label{padding-top:4px;font-weight:600}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="hero">
+    <div>
+      <h1>🧰 字段评审工作台</h1>
+      <p>从「录字段的人」变成「说清楚字段凭什么存在的人」—— 五问 + 变更台账</p>
+    </div>
+    <a class="back-btn" href="index.html">← 返回技能树仪表盘</a>
+  </div>
+
+  <!-- 五问 -->
+  <div class="section">
+    <div class="section-head">
+      <h2>① 字段评审五问</h2>
+      <span class="hint">每次新字段进 DDP 前，花 2 分钟问清楚 · 可直接打印带去开会</span>
+    </div>
+    <div class="q-grid">
+      <div class="qcard"><span class="num">1</span>
+        <h3>这个字段支撑哪个报表 / 指标 / 监管口径？</h3>
+        <div class="why">用途决定它该不该存在。说不清用途的字段，往往三个月后无人使用。</div>
+        <div class="flag">⚠ 危险信号：回答是「业务方说要加」——继续问下去。</div>
+      </div>
+      <div class="qcard"><span class="num">2</span>
+        <h3>口径定义是什么？</h3>
+        <div class="why">分子分母、时点、币种、含不含附属企业、是否含未结清……口径不写清楚，后面一定打架。</div>
+        <div class="flag">⚠ 危险信号：只有字段名，没有定义文档。</div>
+      </div>
+      <div class="qcard"><span class="num">3</span>
+        <h3>数据从哪来、源头谁维护？</h3>
+        <div class="why">上游不清，血缘就是假的。这张表的 owner 是谁？更新频率？</div>
+        <div class="flag">⚠ 危险信号：「一直就有的字段」，没人说得清来源。</div>
+      </div>
+      <div class="qcard"><span class="num">4</span>
+        <h3>和现有字段有没有重复或冲突？</h3>
+        <div class="why">治理最大的坑：同一个意思建了三个字段，各自算出来的数还不一样。</div>
+        <div class="flag">⚠ 危险信号：字段名不同但定义高度相似。</div>
+      </div>
+      <div class="qcard"><span class="num">5</span>
+        <h3>这次改动会影响谁？</h3>
+        <div class="why">下游报表、Batch 作业、历史数据是否要回补？影响面没说清就上线的，返工率最高。</div>
+        <div class="flag">⚠ 危险信号：「先加上，以后再说」。</div>
+      </div>
+      <div class="qcard" style="background:var(--accent-soft);border-color:#cfe0fd">
+        <h3 style="padding-right:0">💡 记忆法：用 · 义 · 源 · 重 · 影</h3>
+        <div class="why" style="color:#1e3a8a">用途、定义、来源、重复、影响 —— 五问齐全，字段才算「可解释」。<br><br>你不需要决定加不加，你只需要让它变得可解释。</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 话术 -->
+  <div class="section">
+    <div class="section-head">
+      <h2>② 提异议的正确说法</h2>
+      <span class="hint">用风险说话，不用观点说话</span>
+    </div>
+    <div class="card">
+      <div class="script" id="script">
+        <b>❌ 不要说：</b>「我觉得这个字段没必要 / 这样设计不太合理。」<br><br>
+        <b>✅ 要说：</b>「这个字段可以加，但上线前需要同步确认三件事：<b>① 口径定义</b>（分子分母/时点/是否含附属企业）；<b>② 下游影响</b>（A 报表和 B 指标是否要跟着改）；<b>③ 历史数据</b>（是否需要回补）。否则上线后口径会和现有指标打架，返工成本在报表侧。」<br><br>
+        <b>为什么有效：</b>你没有阻拦任何人，你在帮对方避免返工。业务方和开发都会尊重这种提问——这是不越权也能建立专业权威的唯一方式。
+      </div>
+      <button class="copy-btn" onclick="copyScript()">复制这段话术</button>
+    </div>
+  </div>
+
+  <!-- 台账 -->
+  <div class="section">
+    <div class="section-head">
+      <h2>③ 字段变更台账</h2>
+      <span class="hint">云端保存 · 季度汇报时导出 CSV，用数据证明你的价值</span>
+    </div>
+    <div class="card">
+      <div class="form-grid">
+        <label>日期</label><input type="date" id="f-date">
+        <label>字段 / 变更</label><input type="text" id="f-field" placeholder="例如：CAR_RWA_AFFIL_AMT（附属企业 RWA 金额）">
+        <label>系统</label>
+        <select id="f-system">
+          <option>DDP（元数据/映射）</option><option>EDP（监管报送）</option><option>CAR</option><option>其他</option>
+        </select>
+        <label>① 用途</label><input type="text" id="f-use" placeholder="支撑哪个报表/指标/监管口径">
+        <label>② 口径定义</label><textarea id="f-def" placeholder="分子分母、时点、币种、含不含附属企业…"></textarea>
+        <label>③ 上游来源</label><input type="text" id="f-source" placeholder="源系统.表.字段 / owner / 更新频率">
+        <label>④ 重复冲突</label><input type="text" id="f-dup" placeholder="是否与已有字段重复？无则写「无」">
+        <label>⑤ 下游影响</label><input type="text" id="f-impact" placeholder="影响哪些报表 / Batch / 历史数据回补">
+        <label>评审结论</label>
+        <select id="f-verdict">
+          <option>通过</option><option>有条件通过</option><option>驳回 / 需补充</option>
+        </select>
+        <label>备注</label><input type="text" id="f-note" placeholder="遗留问题、跟进人、下一步动作">
+      </div>
+      <div class="form-foot">
+        <button class="btn" id="f-submit" onclick="saveReview()">保存到台账</button>
+        <button class="btn ghost" onclick="exportCSV()">导出 CSV</button>
+        <span class="status" id="f-status"></span>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:16px">
+      <div class="stats" id="stats"></div>
+      <div id="table"></div>
+    </div>
+  </div>
+
+  <footer style="margin-top:40px;text-align:center;font-size:12px;color:var(--ink-3)">
+    台账数据存于云端 · 与技能树同一账号 · 建议每周五花 5 分钟补录
+  </footer>
+</div>
+
+<script>
+const BIN = "6af05034ac6210605a7711d2";
+const AK  = "$2a$10$Trf1IG3tMoq.s9XiUTYE5eC4N8r0rUvGWTE.H1pzMMJPjxOJjs/Xm";
+const API = "https://api.jsonbin.io/v3/b/" + BIN;
+const HDR = { "Content-Type": "application/json", "X-Access-Key": AK };
+let ROWS = [];
+
+const VERDICT_CLASS = { "通过": "ok-pill", "有条件通过": "mid-pill", "驳回 / 需补充": "no-pill" };
+
+async function load() {
+  try {
+    const r = await fetch(API + "/latest", { headers: HDR });
+    const j = await r.json();
+    ROWS = j.record.reviews || [];
+  } catch (e) { ROWS = []; }
+  render();
+}
+
+async function saveReviews() {
+  const r = await fetch(API, { method: "PUT", headers: HDR, body: JSON.stringify({ reviews: ROWS }) });
+  if (!r.ok) throw new Error("保存失败 (" + r.status + ")");
+}
+
+async function saveReview() {
+  const btn = document.getElementById("f-submit"), st = document.getElementById("f-status");
+  const field = document.getElementById("f-field").value.trim();
+  if (!field) { st.textContent = "请先填写字段名"; st.className = "status err"; return; }
+  btn.disabled = true; st.textContent = "保存中…"; st.className = "status";
+  const row = {
+    id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
+    date: document.getElementById("f-date").value || new Date().toISOString().slice(0, 10),
+    field,
+    system: document.getElementById("f-system").value,
+    use: document.getElementById("f-use").value.trim(),
+    def: document.getElementById("f-def").value.trim(),
+    source: document.getElementById("f-source").value.trim(),
+    dup: document.getElementById("f-dup").value.trim(),
+    impact: document.getElementById("f-impact").value.trim(),
+    verdict: document.getElementById("f-verdict").value,
+    note: document.getElementById("f-note").value.trim(),
+    createdAt: new Date().toISOString()
+  };
+  ROWS.unshift(row);
+  try {
+    await saveReviews();
+    st.textContent = "✓ 已保存到台账（云端同步）"; st.className = "status ok";
+    ["f-field","f-use","f-def","f-source","f-dup","f-impact","f-note"].forEach(id => document.getElementById(id).value = "");
+    render();
+  } catch (e) {
+    ROWS = ROWS.filter(r => r.id !== row.id);
+    st.textContent = "✗ " + e.message; st.className = "status err";
+  } finally { btn.disabled = false; }
+}
+
+async function delReview(id) {
+  if (!confirm("确认删除这条台账记录？")) return;
+  const backup = ROWS.slice();
+  ROWS = ROWS.filter(r => r.id !== id);
+  try { await saveReviews(); render(); }
+  catch (e) { ROWS = backup; alert("删除失败：" + e.message); }
+}
+
+function render() {
+  const st = document.getElementById("stats");
+  const total = ROWS.length;
+  const cond = ROWS.filter(r => r.verdict === "有条件通过").length;
+  const rej = ROWS.filter(r => r.verdict && r.verdict.indexOf("驳回") === 0).length;
+  const dup = ROWS.filter(r => r.dup && !/^无$|^沒有|^没有$/.test(r.dup.trim())).length;
+  st.innerHTML = `
+    <div><b>${total}</b>已评审字段</div>
+    <div><b>${cond}</b>有条件通过</div>
+    <div><b>${rej}</b>驳回/需补充</div>
+    <div><b>${dup}</b>发现重复/冲突</div>`;
+
+  const t = document.getElementById("table");
+  if (!ROWS.length) {
+    t.innerHTML = `<div class="empty">台账还是空的。<br>下一次有新字段进来时，用上面的五问过一遍，然后记在这里——<br>三个月后这就是你从「执行」走向「口径 owner」的证据。</div>`;
+    return;
+  }
+  t.innerHTML = `<table>
+    <tr><th>日期</th><th>字段/变更</th><th>系统</th><th>① 用途</th><th>② 口径</th><th>③ 来源</th><th>④ 重复</th><th>⑤ 影响</th><th>结论</th><th></th></tr>
+    ${ROWS.map(r => `<tr>
+      <td style="white-space:nowrap;color:var(--ink-3)">${r.date}</td>
+      <td><b>${esc(r.field)}</b>${r.note ? `<div style="font-size:11.5px;color:var(--ink-3)">${esc(r.note)}</div>` : ""}</td>
+      <td style="font-size:12px;color:var(--ink-2)">${esc(r.system || "")}</td>
+      <td style="font-size:12.5px">${esc(r.use || "—")}</td>
+      <td style="font-size:12.5px">${esc(r.def || "—")}</td>
+      <td style="font-size:12.5px">${esc(r.source || "—")}</td>
+      <td style="font-size:12.5px">${esc(r.dup || "—")}</td>
+      <td style="font-size:12.5px">${esc(r.impact || "—")}</td>
+      <td><span class="pill ${VERDICT_CLASS[r.verdict] || "mid-pill"}">${esc(r.verdict || "—")}</span></td>
+      <td><span class="del" onclick="delReview('${r.id}')">删除</span></td>
+    </tr>`).join("")}
+  </table>`;
+}
+
+function esc(s) {
+  return (s || "").toString().replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+
+function exportCSV() {
+  if (!ROWS.length) { alert("台账为空，无法导出"); return; }
+  const head = ["日期","字段/变更","系统","用途","口径定义","上游来源","重复冲突","下游影响","评审结论","备注"];
+  const rows = ROWS.map(r => [r.date, r.field, r.system, r.use, r.def, r.source, r.dup, r.impact, r.verdict, r.note]);
+  const csv = [head, ...rows].map(line => line.map(v => `"${(v || "").toString().replace(/"/g, '""')}"`).join(",")).join("\n");
+  const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "字段评审台账_" + new Date().toISOString().slice(0, 10) + ".csv";
+  a.click();
+}
+
+function copyScript() {
+  const text = document.getElementById("script").innerText;
+  navigator.clipboard.writeText(text).then(() => alert("已复制，可以直接粘到会议记录或邮件里")).catch(() => alert("复制失败，请手动选中复制"));
+}
+
+document.getElementById("f-date").value = new Date().toISOString().slice(0, 10);
+load();
+</script>
+</body>
+</html>
