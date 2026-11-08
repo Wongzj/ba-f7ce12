@@ -199,6 +199,7 @@
       <ul class="bullets" id="cn-2">
         <li>负责风险条线元数据治理：维护 <span class="v" data-k="bizAttr" data-ph="[X]">[X]</span> 个业务属性与 <span class="v" data-k="tblCount" data-ph="[Y]">[Y]</span> 张源系统表的技术元数据，覆盖 <span class="v" data-k="sysCount" data-ph="[Z]">[Z]</span> 个源系统。</li>
         <li>建立并维护 <span class="v" data-k="b2tCount" data-ph="[N]">[N]</span> 条业务—技术（B2T）映射，形成字段级数据血缘，支撑风险指标口径统一与 BCBS239 数据可追溯要求。</li>
+        <li>结合 Data Mapping 文档追溯数据来源：由 B2T 定位目标库表后，进一步查阅源文件、处理字段与转换逻辑，完成报送数据的两段式溯源与异常成因定位。</li>
         <li>对接业务方与开发团队，在 <span class="v" data-k="relCount" data-ph="[M]">[M]</span> 轮版本迭代中完成元数据变更的录入与核对，保障字段定义、数据来源与映射关系三者一致；平均每月处理约 <span class="v" data-k="reqMonth" data-ph="[K]">[K]</span> 项字段变更请求。</li>
         <li>维护字段变更台账，记录每次评审的口径、来源、重复与下游影响结论，为季度治理汇报提供数据支撑。</li>
       </ul>
@@ -208,17 +209,19 @@
       <ul class="bullets en" id="en-2">
         <li>Owned metadata governance for the risk data domain: maintained business metadata for <span class="v" data-k="bizAttr" data-ph="[X]">[X]</span> business attributes and technical metadata for <span class="v" data-k="tblCount" data-ph="[Y]">[Y]</span> source-system tables across <span class="v" data-k="sysCount" data-ph="[Z]">[Z]</span> source systems.</li>
         <li>Built and maintained <span class="v" data-k="b2tCount" data-ph="[N]">[N]</span> business-to-technical (B2T) mappings, establishing field-level data lineage that underpins consistent metric definitions and BCBS239 traceability.</li>
+        <li>Traced data provenance through Data Mapping specifications — using B2T to locate the target table, then following source files, processed fields and transformation logic to complete two-stage lineage tracing and root-cause analysis of reporting discrepancies.</li>
         <li>Partnered with business stakeholders and engineering across <span class="v" data-k="relCount" data-ph="[M]">[M]</span> release cycles to register and validate metadata changes, ensuring consistency between field definitions, data sources and mappings — handling approximately <span class="v" data-k="reqMonth" data-ph="[K]">[K]</span> change requests per month.</li>
         <li>Maintained a field change ledger capturing definition, source, duplication and downstream impact for each review, feeding quarterly data governance reporting.</li>
       </ul>
       <div class="row-foot"><button class="copy-btn" onclick="copyEl('en-2',this)">Copy English</button></div>
 
       <div class="lbl">ATS 关键词</div>
-      <div class="kw"><span>Metadata Management</span><span>Data Governance</span><span>Business Glossary</span><span>B2T Mapping</span><span>Data Lineage</span><span>BCBS239</span><span>Impact Analysis</span><span>Stakeholder Alignment</span><span>Data Dictionary</span></div>
+      <div class="kw"><span>Metadata Management</span><span>Data Governance</span><span>Business Glossary</span><span>B2T Mapping</span><span>Data Mapping</span><span>Source-to-Target Mapping</span><span>Data Lineage</span><span>BCBS239</span><span>Impact Analysis</span><span>Root Cause Analysis</span><span>Stakeholder Alignment</span><span>Data Dictionary</span></div>
 
       <div class="note">
         <b>为什么这么写：</b>动词用 owned（有实际维护职责，站得住）、built and maintained、partnered —— 全部是事实。关键是每条都带规模和对象（多少个字段、几个系统、几轮版本），让招聘方一眼看出这不是打杂。<br>
-        <b>有一条现在是「半成品」：</b>最后那条台账，如果你还没开始用 tools.html 记录，就删掉 —— 写了但面试被追问「台账长什么样、给我看一个例子」会露。等有 10 条以上记录再放回来。
+        <b>Data Mapping 那条是你的隐藏优势：</b>大部分 BA 只会看元数据登记表，读不懂开发写的映射文档。你能把「B2T 定位到表」和「Data Mapping 追到转换逻辑」串起来，就等于会完整溯源 —— 这在面试里比任何形容词都有说服力。如果你也参与过编写这些文档，把动词改成 authored / contributed to，含金量再上一档。<br>
+        <b>「维护字段变更台账」那条现在是「半成品」：</b>如果你还没开始用 tools.html 记录，就删掉 —— 写了但面试被追问「台账长什么样、给我看一个例子」会露。等有 10 条以上记录再放回来。
       </div>
     </div>
   </div>
@@ -255,13 +258,13 @@
     <div class="card">
       <div class="block" id="full-cn">
         <div class="hd">元数据治理与监管报送数据链路 ｜ 中资银行香港 ｜ 2026</div>
-        负责风险条线 DDP 元数据平台的业务元数据、技术元数据与 B2T 映射维护，覆盖 <span class="v" data-k="bizAttr" data-ph="[X]">[X]</span> 个业务属性、<span class="v" data-k="tblCount" data-ph="[Y]">[Y]</span> 张源系统表、<span class="v" data-k="sysCount" data-ph="[Z]">[Z]</span> 个源系统，累计建立 <span class="v" data-k="b2tCount" data-ph="[N]">[N]</span> 条字段级映射，支撑风险指标口径统一与 BCBS239 数据可追溯要求。参与 <span class="v" data-k="relCount" data-ph="[M]">[M]</span> 轮版本迭代的元数据变更管理，与业务及开发团队对齐字段定义、来源与下游影响；同时梳理 EDP 监管报送平台端到端数据链路（含 <span class="v" data-k="batchCount" data-ph="[Q]">[Q]</span> 个 Batch 作业与 RWA / CAR 报送指标），输出链路说明用于报送异常定位与变更影响评估。
+        负责风险条线 DDP 元数据平台的业务元数据、技术元数据与 B2T 映射维护，覆盖 <span class="v" data-k="bizAttr" data-ph="[X]">[X]</span> 个业务属性、<span class="v" data-k="tblCount" data-ph="[Y]">[Y]</span> 张源系统表、<span class="v" data-k="sysCount" data-ph="[Z]">[Z]</span> 个源系统，累计建立 <span class="v" data-k="b2tCount" data-ph="[N]">[N]</span> 条字段级映射，支撑风险指标口径统一与 BCBS239 数据可追溯要求。参与 <span class="v" data-k="relCount" data-ph="[M]">[M]</span> 轮版本迭代的元数据变更管理，与业务及开发团队对齐字段定义、来源与下游影响；同时梳理 EDP 监管报送平台端到端数据链路（含 <span class="v" data-k="batchCount" data-ph="[Q]">[Q]</span> 个 Batch 作业与 RWA / CAR 报送指标），输出链路说明用于报送异常定位与变更影响评估。日常结合 Data Mapping 文档完成「业务字段 → 目标库表 → 源文件与转换逻辑」的两段式数据溯源。
       </div>
       <div class="row-foot"><button class="copy-btn" onclick="copyEl('full-cn',this)">复制整段（中文）</button></div>
 
       <div class="block en" id="full-en" style="margin-top:14px">
         <div class="hd">Metadata Governance &amp; Regulatory Reporting Data Flow ｜ Corporate Bank, Hong Kong ｜ 2026</div>
-        Owned business and technical metadata plus B2T mappings for the risk data domain on the DDP platform, covering <span class="v" data-k="bizAttr" data-ph="[X]">[X]</span> business attributes, <span class="v" data-k="tblCount" data-ph="[Y]">[Y]</span> source-system tables across <span class="v" data-k="sysCount" data-ph="[Z]">[Z]</span> source systems and <span class="v" data-k="b2tCount" data-ph="[N]">[N]</span> field-level mappings — underpinning consistent risk metric definitions and BCBS239 traceability. Managed metadata changes across <span class="v" data-k="relCount" data-ph="[M]">[M]</span> release cycles, aligning definitions, data sources and downstream impact with business and engineering stakeholders. Additionally mapped the end-to-end data flow of the EDP regulatory reporting platform, including <span class="v" data-k="batchCount" data-ph="[Q]">[Q]</span> batch jobs and key reported metrics (RWA, CAR), producing flow documentation used for incident triage and change impact assessment.
+        Owned business and technical metadata plus B2T mappings for the risk data domain on the DDP platform, covering <span class="v" data-k="bizAttr" data-ph="[X]">[X]</span> business attributes, <span class="v" data-k="tblCount" data-ph="[Y]">[Y]</span> source-system tables across <span class="v" data-k="sysCount" data-ph="[Z]">[Z]</span> source systems and <span class="v" data-k="b2tCount" data-ph="[N]">[N]</span> field-level mappings — underpinning consistent risk metric definitions and BCBS239 traceability. Managed metadata changes across <span class="v" data-k="relCount" data-ph="[M]">[M]</span> release cycles, aligning definitions, data sources and downstream impact with business and engineering stakeholders. Additionally mapped the end-to-end data flow of the EDP regulatory reporting platform, including <span class="v" data-k="batchCount" data-ph="[Q]">[Q]</span> batch jobs and key reported metrics (RWA, CAR), producing flow documentation used for incident triage and change impact assessment. Day-to-day, traced data provenance through Data Mapping specifications, linking business attributes to target tables, source files and transformation logic.
       </div>
       <div class="row-foot"><button class="copy-btn" onclick="copyEl('full-en',this)">Copy full paragraph</button></div>
     </div>
@@ -280,6 +283,8 @@
           <tr><td>维护／负责元数据与 B2T 映射</td><td class="yes">✓ 能用</td><td>事实，且是你唯一有实际职责的部分</td></tr>
           <tr><td>参与 N 轮版本变更、对齐定义与来源</td><td class="yes">✓ 能用</td><td>事实层面的动作描述</td></tr>
           <tr><td>梳理数据链路、拆解指标口径</td><td class="yes">✓ 能用</td><td>只要你能现场画出那张图就是真的</td></tr>
+          <tr><td>使用 Data Mapping 文档追溯数据来源</td><td class="yes">✓ 能用</td><td>你日常确实在这么做，且能讲出具体查法</td></tr>
+          <tr><td>编写／维护 Data Mapping 规范</td><td class="no">✗ 写过才可用</td><td>目前是使用别人的文档；写过再改成 authored</td></tr>
           <tr><td>建立了元数据标准／治理流程</td><td class="no">✗ 暂不能用</td><td>标准是别人定的，你执行的是标准</td></tr>
           <tr><td>主导变更评审、驳回字段申请</td><td class="no">✗ 暂不能用</td><td>没有审批权，写到就是虚构</td></tr>
           <tr><td>识别 N 处口径冲突并推动解决</td><td class="no">✗ 有台账才可用</td><td>拿不出案例的量化等于自曝</td></tr>

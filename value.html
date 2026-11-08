@@ -54,6 +54,16 @@
 
   /* 角色对比 */
   .role-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .duo{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px 22px}
+  .duo h3{font-size:14.6px;margin-bottom:3px}
+  .duo .sub{font-size:12.3px;color:var(--ink-3);margin-bottom:12px}
+  .duo .q{font-size:13px;color:var(--ink);background:#f4f7fc;border-radius:8px;padding:9px 12px;margin-bottom:12px;line-height:1.8}
+  .duo ul{list-style:none;font-size:13.1px;color:var(--ink-2)}
+  .duo li{padding:6px 0 6px 15px;position:relative;line-height:1.75}
+  .duo li::before{content:"·";position:absolute;left:3px;color:var(--accent);font-weight:700}
+  .duo .gap{margin-top:10px;font-size:12.5px;color:var(--rose);background:var(--rose-soft);padding:7px 11px;border-radius:7px;line-height:1.75}
+  .chain{margin-top:14px;background:#fbfaf5;border-left:3px solid var(--amber);padding:12px 16px;border-radius:0 8px 8px 0;font-size:13.2px;color:var(--ink-2);line-height:1.9}
+  .chain b{color:var(--ink)}
   .role{border-radius:14px;padding:20px 22px;border:1px solid var(--line);background:var(--card)}
   .role.bad{background:#fdfafa;border-color:#f3dcdc}
   .role.good{background:#f7fcfb;border-color:#cdeae4}
@@ -163,6 +173,53 @@
       <div class="flow-cap">
         你平时做的是中间那一层：把业务口径和技术字段连起来。这个连接一旦断了，上面三层就各自漂移 —— 这正是平台存在的理由。
       </div>
+    </div>
+  </div>
+
+  <!-- 两种查法 -->
+  <div class="section">
+    <div class="section-head">
+      <h2>①·附 你其实在查两样东西</h2>
+      <span class="hint">登记式元数据回答「在哪」，逻辑式映射回答「怎么来的」—— 两者合起来才是完整血缘</span>
+    </div>
+    <div class="role-grid">
+      <div class="duo">
+        <h3>DDP · 登记式元数据</h3>
+        <div class="sub">业务属性 ↔ 技术字段</div>
+        <div class="q">回答：<b>这个字段存在哪张表、谁在用、口径是什么</b></div>
+        <ul>
+          <li>业务元数据：字段名、定义、用途</li>
+          <li>技术元数据：库表、字段类型、来源系统</li>
+          <li>B2T 映射：业务字段落在哪个物理字段</li>
+        </ul>
+        <div class="gap">局限：只到「目标表」为止，看不到这个数是怎么加工出来的</div>
+      </div>
+      <div class="duo">
+        <h3>Data Mapping · 逻辑式映射</h3>
+        <div class="sub">源文件 → 处理逻辑 → 目标表</div>
+        <div class="q">回答：<b>这个数是怎么算出来的</b></div>
+        <ul>
+          <li>源文件 / 源表：数据从哪些文件、哪张源头表来</li>
+          <li>处理字段：取哪些字段、丢弃哪些</li>
+          <li>转换逻辑：过滤条件、计算规则、表间关联</li>
+          <li>目标表：加工后落到哪里、报送如何取数</li>
+        </ul>
+        <div class="gap">局限：文档分散在各项目里，口径未统一登记，版本容易过期</div>
+      </div>
+    </div>
+    <div class="card" style="margin-top:14px">
+      <p class="lead" style="margin-bottom:12px">
+        <b>真正的追溯是两段式的 —— 而你已经在这么做了：</b>
+      </p>
+      <div class="chain">
+        ① <b>DDP</b> 查业务字段 → 定位目标库表与责任系统<br>
+        ② <b>Data Mapping</b> 查该系统文档 → 追到源文件、处理字段与转换逻辑<br>
+        ③ 回源系统抽样核对 → 确认口径与数据一致
+      </div>
+      <p class="lead" style="margin-top:14px">
+        面试被问「你怎么定位一个报送数字的来源」，就按这三段答 —— 比说「问开发」强一百倍。
+        <b>因为这说明你既看得懂元数据，也读得懂开发文档</b>，很多 BA 只会前者。
+      </p>
     </div>
   </div>
 
