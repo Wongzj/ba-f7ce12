@@ -66,6 +66,36 @@
   details.raw p { font-size: 13px; color: var(--ink-3); line-height: 1.8; margin-top: 6px; white-space: pre-wrap; }
   .empty { text-align: center; color: var(--ink-3); font-size: 14px; padding: 60px 0; line-height: 2.2; background: var(--card); border: 1px solid var(--line); border-radius: 16px; margin-top: 18px; }
   .empty a { color: var(--accent); }
+
+  /* 答题骨架 */
+  .frame { background: var(--card); border: 1px solid var(--line); border-radius: 16px; margin-top: 16px; overflow: hidden; }
+  .frame-head { display: flex; align-items: center; gap: 10px; padding: 16px 22px; cursor: pointer; user-select: none; }
+  .frame-head h2 { font-size: 15.5px; }
+  .frame-head .hint { font-size: 12.5px; color: var(--ink-3); margin-left: auto; }
+  .frame-body { padding: 0 22px 20px; }
+  .rules { background: var(--rose-soft); border-radius: 10px; padding: 12px 16px; margin-bottom: 14px; }
+  .rules .lab { font-size: 12px; color: var(--rose); font-weight: 700; margin-bottom: 6px; }
+  .rules li { font-size: 13.3px; line-height: 1.8; color: #7f1d1d; padding-left: 15px; position: relative; list-style: none; }
+  .rules li::before { content: "▸"; position: absolute; left: 0; }
+  .ftable { width: 100%; border-collapse: collapse; }
+  .ftable tr { border-top: 1px solid var(--line); }
+  .ftable tr:first-child { border-top: none; }
+  .ftable td { padding: 10px 0; vertical-align: top; font-size: 13.3px; line-height: 1.8; color: var(--ink-2); }
+  .ftable td:first-child { width: 190px; padding-right: 16px; color: var(--ink); font-weight: 600; font-size: 13px; }
+
+  /* 追问答案 */
+  details.qa { border-top: 1px solid #eee4c4; padding: 9px 0; }
+  details.qa:first-of-type { border-top: none; padding-top: 4px; }
+  details.qa > summary { font-size: 13.3px; line-height: 1.75; color: var(--ink); cursor: pointer; font-weight: 500; list-style: none; padding-left: 20px; position: relative; }
+  details.qa > summary::-webkit-details-marker { display: none; }
+  details.qa > summary::before { content: "?"; position: absolute; left: 0; top: 1px; width: 15px; height: 15px; line-height: 15px; text-align: center; border-radius: 50%; background: var(--amber); color: #fff; font-size: 10.5px; font-weight: 700; }
+  details.qa[open] > summary { color: var(--accent); }
+  .qa-body { margin: 10px 0 4px 20px; }
+  .qa-key { background: var(--teal-soft); border-left: 3px solid var(--teal); border-radius: 0 8px 8px 0; padding: 9px 14px; font-size: 13.3px; line-height: 1.8; color: #115e59; }
+  .qa-key::before { content: "一句话立场 · "; font-weight: 700; font-size: 11.5px; letter-spacing: .3px; }
+  .qa-exp { font-size: 13.3px; line-height: 1.85; color: var(--ink-2); margin-top: 9px; }
+  .qa-risk { background: var(--amber-soft); border-radius: 8px; padding: 9px 14px; font-size: 12.8px; line-height: 1.8; color: #92400e; margin-top: 9px; }
+  .qa-risk::before { content: "诚实边界 · "; font-weight: 700; font-size: 11.5px; letter-spacing: .3px; }
   footer { margin-top: 40px; text-align: center; font-size: 12px; color: var(--ink-3); }
 </style>
 </head>
@@ -82,6 +112,30 @@
 
   <div class="toolbar" id="chips"></div>
   <div class="statline" id="statline"></div>
+
+  <div class="frame">
+    <div class="frame-head" onclick="this.parentNode.querySelector('.frame-body').style.display = this.parentNode.querySelector('.frame-body').style.display==='none'?'block':'none'">
+      <h2>🎯 答题骨架 · 先记这个，再看每题的答案</h2>
+      <span class="hint">35 题里有一半是同一类题型 · 点击收起</span>
+    </div>
+    <div class="frame-body">
+      <div class="rules">
+        <div class="lab">三条铁律（违反任一条，答得再好都扣分）</div>
+        <ul>
+          <li>只说<span style="font-weight:600">做过的动作</span>，不说想过的方案。想说方案就加一句「我当时的判断是…但没落地」。</li>
+          <li>每个答案留一个<span style="font-weight:600">边界句</span>：这块不在我职责内 / 我没做到这一步。边界感比完整感值钱。</li>
+          <li>结尾尽量给一句「如果重来我会…」—— 把漏洞转成复盘能力，这是执行者和 owner 的分水岭。</li>
+        </ul>
+      </div>
+      <table class="ftable">
+        <tr><td>「这个数字 / 阈值谁定的？」</td><td>划归属 → 讲判断逻辑 → 指出依据在哪类文件里。<b>禁止编出处</b>，答「我知道它属于哪一类要求，具体条款我去核 policy owner」。</td></tr>
+        <tr><td>「你怎么证明？只查了一次？」</td><td>给取证方法（多批次、时间窗口、书面确认），再主动认取证边界（表级能查、报表接口级查不到）。这种题考的是你知不知道自己的证据弱在哪。</td></tr>
+        <tr><td>「有没有台账 / 书面痕迹？」</td><td><b>最容易翻车的一类。</b>有就说有什么（邮件、IM 也算，但要标明「不是正式审批」）；没有就直接认，再讲正确做法长什么样。认错比编造安全十倍。</td></tr>
+        <tr><td>「对方不同意 / 不回你怎么办？」</td><td>三步：先问动机（他反对背后可能真有下游）→ 给事实（证据摆出来）→ 升级裁决（业务 owner 定，BA 出材料不当裁判）。</td></tr>
+        <tr><td>「这算成功吗？验收标准？」</td><td>给<b>多条件</b>验收标准，不是「事办完了」。例：SLA 内闭环 + 无副作用 + 可追溯，三条同时成立才算成功。</td></tr>
+      </table>
+    </div>
+  </div>
 
   <div id="list"></div>
 
@@ -108,11 +162,36 @@ function pill(domain) {
   return `<span class="pill" style="background:${c[0]};color:${c[1]}">${domain}</span>`;
 }
 
+function qaHtml(iv) {
+  const qs = iv.questions || [];
+  if (!qs.length) return "";
+  const as = iv.answers || [];
+  const has = as.length === qs.length;
+  const items = qs.map((q, i) => {
+    const a = has ? as[i] : null;
+    const text = typeof q === "string" ? q : (q && q.q) || "";
+    const ans = a && typeof a === "object" ? a : (typeof q === "object" && q && q.a ? q : null);
+    if (!ans) return `<details class="qa"><summary>${text}</summary><div class="qa-body"><div class="qa-risk">这条还没整理答案。</div></div></details>`;
+    return `<details class="qa"><summary>${text}</summary><div class="qa-body">
+      ${ans.key?`<div class="qa-key">${ans.key}</div>`:""}
+      ${ans.a?`<div class="qa-exp">${ans.a}</div>`:""}
+      ${ans.risk?`<div class="qa-risk">${ans.risk}</div>`:""}
+    </div></details>`;
+  }).join("");
+  return `<div class="interview"><div class="lab">⚠️ 面试官可能追问 · 点开看怎么答（${qs.length} 题）</div>${items}</div>`;
+}
+
 function renderChips() {
   const domains = ["全部", ...new Set(ALL.filter(p=>p.domain).map(p => p.domain))];
   document.getElementById("chips").innerHTML = domains.map(d =>
     `<button class="chip ${d===filterDomain?"on":""}" onclick="setFilter('${d}')">${d}</button>`).join("")
+    + `<button class="chip" onclick="toggleAll(this)">展开全部答案</button>`
     + `<input class="search" placeholder="🔍 搜索项目关键词…" oninput="setKeyword(this.value)">`;
+}
+function toggleAll(btn) {
+  const open = btn.textContent.indexOf("展开") > -1;
+  document.querySelectorAll("details.qa").forEach(d => d.open = open);
+  btn.textContent = open ? "收起全部答案" : "展开全部答案";
 }
 function setFilter(d){ filterDomain = d; render(); }
 function setKeyword(k){ keyword = k.trim().toLowerCase(); render(); }
@@ -152,7 +231,7 @@ function render() {
         <p><b>T 任务：</b>${iv.star.t||"-"}</p>
         <p><b>A 行动：</b>${iv.star.a||"-"}</p>
         <p><b>R 结果：</b>${iv.star.r||"-"}</p></div>`:""}
-      ${(iv.questions&&iv.questions.length)?`<div class="interview"><div class="lab">⚠️ 面试官可能追问</div><ul>${iv.questions.map(q=>`<li>${q}</li>`).join("")}</ul></div>`:""}
+      ${qaHtml(iv)}
       ${(p.text)?`<details class="raw"><summary>查看原始记录</summary><p>${p.text.replace(/</g,"&lt;")}</p></details>`:""}
     </div>`;
   }).join("");
