@@ -153,9 +153,10 @@ const SYSTEMS = [
 // 首次使用时的骨架模板
 const SKELETON = "## 系统定位\n（待补充：这个系统是做什么的、服务谁、为什么存在）\n\n## 端到端数据链路\n（待补充：数据从哪来 → 怎么加工 → 到哪去）\n\n## 核心流程 / 批次\n（待补充）\n\n## 与其他系统的关系\n（待补充：EDP / DDP / BDC / CAR …）\n\n## 关键概念\n（待补充：术语、文件类型、缩写）\n\n## 面试要点\n（待补充：最容易被追问的点）";
 
-let DOCS = null;      // 云端数据 {edp:{title,sourceUrl,updated,md}, ...}
+let DOCS = {};        // 云端数据 {edp:{title,sourceUrl,updated,md}, ...}（先给空对象，避免首屏渲染时为空）
 let CURRENT = "edp";
 let EDITING = false;
+let LOAD_ERROR = "";
 
 // ---------- 简易 Markdown 渲染 ----------
 function esc(s){return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")}
@@ -212,9 +213,10 @@ function mdRender(src){
 
 // ---------- 云端读写 ----------
 async function loadDocs(){
-  const res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`,{headers:{"X-Access-Key":ACCESS_KEY}});
+  const res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`,{headers:{"X-Access-Key":ACCESS_KEY},cache:"no-store"});
+  if(!res.ok) throw new Error("HTTP "+res.status);
   const data = await res.json();
-  DOCS = data.record && data.record.docs ? data.record.docs : {};
+  DOCS = (data.record && data.record.docs) ? data.record.docs : {};
 }
 async function putDocs(){
   const res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`,{
@@ -227,7 +229,8 @@ async function putDocs(){
 
 // ---------- 渲染 ----------
 function getDoc(key){
-  return DOCS[key] || {title:null, sourceUrl:"", updated:"", md:""};
+  const d = (DOCS && DOCS[key]) ? DOCS[key] : null;
+  return Object.assign({title:null, sourceUrl:"", updated:"", md:""}, d || {});
 }
 function renderSidebar(){
   const el=document.getElementById("sysList");
@@ -247,8 +250,10 @@ function renderDoc(){
   if(d.sourceUrl) meta+=`来源：<a href="${d.sourceUrl}" target="_blank">${d.sourceUrl.length>52?d.sourceUrl.slice(0,52)+"…":d.sourceUrl}</a> · `;
   meta+= d.updated?`最近更新：${d.updated}`:"尚未填写内容";
   document.getElementById("docMeta").innerHTML=meta;
-  document.getElementById("docBody").innerHTML = has? mdRender(d.md)
+  let bodyHtml = has? mdRender(d.md)
     : `<div class="empty-doc">这个系统还没有资料。<br>点右上角「✏️ 编辑本页」开始补充 ——<br>可以从系统定位、数据链路写起，也可以直接把飞书文档内容粘贴进来。</div>`;
+  if(LOAD_ERROR) bodyHtml = `<div class="md" style="margin-bottom:16px"><blockquote>⚠️ ${esc(LOAD_ERROR)}<br>你仍然可以点「✏️ 编辑本页」修改并保存（保存成功后会覆盖云端内容）。</blockquote></div>` + bodyHtml;
+  document.getElementById("docBody").innerHTML = bodyHtml;
   renderSidebar();
 }
 
@@ -261,14 +266,21 @@ function switchSys(key){
   renderDoc();
 }
 function startEdit(){
-  const d=getDoc(CURRENT);
-  document.getElementById("editTitle").value=d.title||SYSTEMS.find(x=>x.key===CURRENT).label;
-  document.getElementById("editSource").value=d.sourceUrl||"";
-  document.getElementById("editBody").value=d.md&&d.md.trim()?d.md:SKELETON;
-  document.getElementById("saveStatus").textContent="";
-  document.getElementById("docView").style.display="none";
-  document.getElementById("docEdit").style.display="";
-  EDITING=true;
+  try{
+    const d=getDoc(CURRENT);
+    const s=SYSTEMS.find(x=>x.key===CURRENT)||{label:CURRENT};
+    document.getElementById("editTitle").value=d.title||s.label;
+    document.getElementById("editSource").value=d.sourceUrl||"";
+    document.getElementById("editBody").value=(d.md&&d.md.trim())?d.md:SKELETON;
+    document.getElementById("saveStatus").textContent="";
+    document.getElementById("docView").style.display="none";
+    document.getElementById("docEdit").style.display="";
+    EDITING=true;
+    const ta=document.getElementById("editBody");
+    if(ta&&ta.scrollIntoView) ta.scrollIntoView({block:"center"});
+  }catch(e){
+    alert("打开编辑失败："+e.message);
+  }
 }
 function cancelEdit(){
   EDITING=false;
@@ -299,12 +311,14 @@ async function saveDoc(){
 // ---------- 启动 ----------
 (async function(){
   renderSidebar();
-  document.getElementById("docBody").innerHTML='<div class="empty-doc">正在从云端加载资料…</div>';
+  renderDoc();                     // 先渲染空态，保证「编辑」按钮立刻可用
   try{
     await loadDocs();
+    LOAD_ERROR="";
     renderDoc();
   }catch(e){
-    document.getElementById("docBody").innerHTML='<div class="empty-doc">云端加载失败：'+esc(e.message)+'<br>请刷新重试。</div>';
+    LOAD_ERROR="云端资料加载失败："+e.message+"（可点编辑后保存重试）";
+    renderDoc();
   }
 })();
 </script>
