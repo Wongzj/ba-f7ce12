@@ -121,6 +121,43 @@
   .pending-item .ps { margin-left: auto; font-size: 11.5px; color: var(--amber); background: var(--amber-soft); padding: 2px 10px; border-radius: 99px; white-space: nowrap; }
   .pending-item .ps.done { color: var(--teal); background: var(--teal-soft); }
 
+  /* ===== 图片识别 ===== */
+  .form-grid .fig-cell { min-width: 0; }
+  .drop {
+    border: 1.5px dashed #c9d2e3; border-radius: 12px; padding: 14px 16px;
+    background: #fbfcfe; cursor: pointer; transition: .15s; display: flex; align-items: center; gap: 12px;
+  }
+  .drop:hover, .drop.on { border-color: var(--accent); background: var(--accent-soft); }
+  .drop .ico { font-size: 20px; line-height: 1; }
+  .drop .t1 { font-size: 13.5px; color: var(--ink); font-weight: 500; }
+  .drop .t2 { font-size: 12px; color: var(--ink-3); margin-top: 3px; line-height: 1.55; }
+
+  .fig-list { margin-top: 10px; display: flex; flex-direction: column; gap: 8px; }
+  .fig {
+    display: flex; gap: 12px; align-items: center; border: 1px solid var(--line);
+    border-radius: 10px; padding: 8px 10px; background: #fff;
+  }
+  .fig img { width: 62px; height: 46px; object-fit: contain; background: #f1f4f9; border-radius: 6px; flex: none; cursor: zoom-in; }
+  .fig .meta { min-width: 0; flex: 1; }
+  .fig .nm { font-size: 12.5px; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .fig .st { font-size: 11.5px; margin-top: 3px; color: var(--ink-3); }
+  .fig .st.ok { color: var(--teal); }
+  .fig .st.err { color: var(--rose); }
+  .fig .st.run { color: var(--accent); }
+  .fig .ops { display: flex; gap: 6px; flex: none; }
+  .mini {
+    border: 1px solid var(--line); background: #fff; color: var(--ink-2); border-radius: 7px;
+    font-size: 11.5px; padding: 4px 9px; cursor: pointer; font-family: inherit;
+  }
+  .mini:hover { border-color: var(--accent); color: var(--accent); }
+  .mini.danger:hover { border-color: var(--rose); color: var(--rose); }
+
+  .ocr-bar { margin-top: 8px; display: flex; align-items: center; gap: 10px; }
+  .ocr-bar[hidden] { display: none; }
+  .ocr-track { flex: 1; height: 5px; background: #eef1f6; border-radius: 99px; overflow: hidden; }
+  .ocr-fill { height: 100%; width: 0; background: var(--accent); border-radius: 99px; transition: width .2s; }
+  .ocr-txt { font-size: 11.5px; color: var(--ink-2); white-space: nowrap; }
+
   .hero-link {
     display: inline-block; margin-top: 12px; color: #fff; text-decoration: none;
     border: 1px solid rgba(255,255,255,.55); background: rgba(255,255,255,.15);
@@ -157,7 +194,7 @@
   <div class="section">
     <div class="section-head">
       <h2>✍️ 记录今日工作</h2>
-      <span class="hint">大白话描述即可 · 提交后由 WorkBuddy 提炼归类并点亮技能树</span>
+      <span class="hint">大白话描述即可，也可贴流程图 / 截图自动识别图中文字 · 提交后由 WorkBuddy 提炼归类并点亮技能树</span>
     </div>
     <div class="form-card">
       <div class="form-grid">
@@ -167,6 +204,22 @@
         <input type="text" id="f-title" placeholder="例如：FPS 转账对账问题排查会">
         <label>我做了什么</label>
         <textarea id="f-text" placeholder="口语化描述即可，例如：&#10;早上和 Ops 开会对 FPS 转账对账差异，确认了是 T+1 的时点问题；下午写了一版 FRD 1.2，新增了三个 user story；顺手跑了两个 SQL 验证数据"></textarea>
+        <label>图片 / 截图</label>
+        <div class="fig-cell">
+          <div class="drop" id="f-drop">
+            <span class="ico">🖼️</span>
+            <div>
+              <div class="t1">点这里选图 · 或把流程图拖进来 · 或直接 Ctrl+V 粘贴截图</div>
+              <div class="t2">自动识别图中文字并填入上方描述框 · 图片只在本机浏览器处理，不上传、不存档</div>
+            </div>
+          </div>
+          <input type="file" id="f-file" accept="image/*" multiple hidden>
+          <div class="ocr-bar" id="f-ocrbar" hidden>
+            <div class="ocr-track"><div class="ocr-fill" id="f-ocrfill"></div></div>
+            <span class="ocr-txt" id="f-ocrtxt"></span>
+          </div>
+          <div class="fig-list" id="f-figs"></div>
+        </div>
       </div>
       <div class="form-foot">
         <button class="btn" id="f-submit" onclick="submitEntry()">提交记录</button>
@@ -451,14 +504,17 @@ async function submitEntry() {
   const date = $("#f-date").value || new Date().toISOString().slice(0, 10);
   const title = $("#f-title").value.trim();
   const text = $("#f-text").value.trim();
-  if (!title && !text) { st.textContent = "请先填写项目或做了什么"; st.className = "form-status err"; return; }
+  if (!title && !text) { st.textContent = "请先填写项目或做了什么（贴图后识别结果会自动填进来）"; st.className = "form-status err"; return; }
   btn.disabled = true; st.textContent = "正在提交…"; st.className = "form-status";
   try {
     const entries = await binGet();
-    entries.unshift({ date, title: title || "(未命名)", text, submittedAt: new Date().toISOString(), processed: false });
+    const entry = { date, title: title || "(未命名)", text, submittedAt: new Date().toISOString(), processed: false };
+    if (FIGURES.length) entry.figures = FIGURES.map(f => f.name);
+    entries.unshift(entry);
     await binSave(entries);
     st.textContent = "✓ 已提交！WorkBuddy 会提炼这条记录并更新技能树"; st.className = "form-status ok";
     $("#f-title").value = ""; $("#f-text").value = "";
+    FIGURES.length = 0; renderFigs(); setBar(false);
     renderPending(entries);
     renderStats();
   } catch (e) {
@@ -473,7 +529,8 @@ function renderPending(entries) {
     <div class="pending-item">
       <span class="pd">${e.date}</span>
       <span class="pt">${e.title}</span>
-      <span class="ps ${e.processed ? "done" : ""}">${e.processed ? "已归类 ✓" : "待提炼"}</span>
+      ${e.figures && e.figures.length ? `<span class="ps" style="margin-left:auto;color:var(--violet);background:var(--violet-soft)">🖼 ${e.figures.length}</span>` : ""}
+      <span class="ps ${e.processed ? "done" : ""}" ${e.figures && e.figures.length ? 'style="margin-left:6px"' : ""}>${e.processed ? "已归类 ✓" : "待提炼"}</span>
     </div>`).join("") + (entries.length > 8 ? `<div class="pending-item" style="color:var(--ink-3)"><span class="pd">…</span><span>以及更早的 ${entries.length - 8} 条记录</span></div>` : "");
 }
 
@@ -578,6 +635,234 @@ function renderPaths() {
       <td style="color:var(--ink-2);line-height:1.7">${p.desc}</td>
       <td>${p.fit===null?'<span style="color:var(--ink-3)">待评估</span>':`<span class="pill" style="background:var(--accent-soft);color:var(--accent)">${p.fit}</span>`}</td>
     </tr>`).join("")}</table>`;
+}
+
+// ============================================================
+// 图片识别（浏览器本地 OCR）—— 图片不上传云端，只把识别出的文字并入记录
+// ============================================================
+const FIGURES = [];
+let tessWorker = null, tessLoading = null;
+
+function esc(s) {
+  return String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+}
+
+function loadTess() {
+  if (window.Tesseract) return Promise.resolve();
+  if (tessLoading) return tessLoading;
+  tessLoading = new Promise((res, rej) => {
+    const s = document.createElement("script");
+    s.src = "https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js";
+    s.onload = () => res();
+    s.onerror = () => { tessLoading = null; rej(new Error("识别引擎加载失败，请检查网络")); };
+    document.head.appendChild(s);
+  });
+  return tessLoading;
+}
+
+function setBar(show, pct, txt) {
+  const bar = $("#f-ocrbar");
+  if (!bar) return;
+  if (!show) { bar.hidden = true; $("#f-ocrfill").style.width = "0"; return; }
+  bar.hidden = false;
+  $("#f-ocrfill").style.width = Math.max(2, Math.round((pct || 0) * 100)) + "%";
+  if (txt) $("#f-ocrtxt").textContent = txt;
+}
+
+function readImage(file) {
+  return new Promise((res, rej) => {
+    const fr = new FileReader();
+    fr.onload = () => res(fr.result);
+    fr.onerror = () => rej(new Error("读取图片失败"));
+    fr.readAsDataURL(file);
+  });
+}
+
+// 等比缩放并转 JPEG，返回 { dataUrl, w, h }
+function shrink(dataUrl, maxSide, quality) {
+  return new Promise((res, rej) => {
+    const img = new Image();
+    img.onload = () => {
+      let w = img.naturalWidth, h = img.naturalHeight;
+      const k = Math.min(1, maxSide / Math.max(w, h));
+      w = Math.max(1, Math.round(w * k)); h = Math.max(1, Math.round(h * k));
+      const cv = document.createElement("canvas");
+      cv.width = w; cv.height = h;
+      const cx = cv.getContext("2d");
+      cx.fillStyle = "#fff"; cx.fillRect(0, 0, w, h);
+      cx.drawImage(img, 0, 0, w, h);
+      res({ dataUrl: cv.toDataURL("image/jpeg", quality), w, h });
+    };
+    img.onerror = () => rej(new Error("图片解码失败，换一张试试"));
+    img.src = dataUrl;
+  });
+}
+
+// OCR 文本清洗：去空行、去碎片行、去连续重复、截断
+function tidyOcr(t) {
+  const lines = String(t || "").split(/\r?\n/)
+    .map(s => s.replace(/[ \t\u3000]+/g, " ").trim())
+    .filter(s => s.replace(/[^\w\u4e00-\u9fa5]/g, "").length >= 2);
+  const out = [];
+  for (const l of lines) if (out[out.length - 1] !== l) out.push(l);
+  return out.join("\n").slice(0, 1200).trim();
+}
+
+function appendOcr(fig) {
+  const box = $("#f-text");
+  const mark = "[图片文字 · " + fig.name + "]";
+  if (box.value.indexOf(mark) >= 0) return;
+  const cur = box.value.trim();
+  box.value = (cur ? cur + "\n\n" : "") + mark + "\n" + fig.text;
+}
+
+function stripOcr(fig) {
+  const box = $("#f-text");
+  const seg = "[图片文字 · " + fig.name + "]\n" + fig.text;
+  box.value = box.value.split(seg).join("").replace(/\n{3,}/g, "\n\n").trim();
+}
+
+async function runOcr(fig) {
+  fig.state = "running"; fig.err = ""; renderFigs();
+  try {
+    await loadTess();
+    if (!tessWorker) {
+      setBar(true, 0.02, "首次识别要下载中英文识别包（约 31MB，一次性），之后走本地缓存秒开…");
+      tessWorker = await Tesseract.createWorker("chi_sim+eng", 1, {
+        logger: m => {
+          if (!m) return;
+          if (m.status === "recognizing text") setBar(true, m.progress, "识别中 " + Math.round((m.progress || 0) * 100) + "%");
+          else if (m.status === "loading language traineddata") setBar(true, (m.progress || 0) * 0.6, "加载中文识别包…");
+          else if (m.status) setBar(true, Math.min(0.55, (m.progress || 0) * 0.5), "初始化识别引擎…");
+        }
+      });
+    } else {
+      setBar(true, 0.1, "识别中…");
+    }
+    const { data } = await tessWorker.recognize(fig.src);
+    fig.text = tidyOcr(data && data.text);
+    fig.state = fig.text ? "ok" : "empty";
+    if (fig.text) appendOcr(fig);
+  } catch (e) {
+    fig.state = "err";
+    fig.err = (e && e.message) || "识别失败";
+  } finally {
+    setBar(false);
+    renderFigs();
+  }
+}
+
+async function addFigure(file) {
+  if (!file || !file.type || file.type.indexOf("image/") !== 0) return;
+  const id = "f" + Math.random().toString(36).slice(2, 8);
+  const fig = {
+    id,
+    name: file.name && file.name !== "image.png" ? file.name : ("截图 " + new Date().toTimeString().slice(0, 5)),
+    text: "", state: "pending", preview: "", src: ""
+  };
+  FIGURES.push(fig);
+  renderFigs();
+  try {
+    const raw = await readImage(file);
+    const big = await shrink(raw, 1800, 0.9);   // 给识别用，太大反而慢
+    const small = await shrink(raw, 240, 0.8);  // 缩略图
+    fig.preview = small.dataUrl;
+    fig.src = big.dataUrl;
+    renderFigs();
+  } catch (e) {
+    fig.state = "err"; fig.err = e.message; renderFigs(); return;
+  }
+  await runOcr(fig);
+}
+
+async function handleFiles(files) {
+  const list = Array.from(files || []).filter(f => f && f.type && f.type.indexOf("image/") === 0);
+  for (const f of list) await addFigure(f);
+}
+
+function rmFig(id) {
+  const i = FIGURES.findIndex(f => f.id === id);
+  if (i < 0) return;
+  if (FIGURES[i].text) stripOcr(FIGURES[i]);
+  FIGURES.splice(i, 1);
+  renderFigs();
+}
+
+async function ocrAgain(id) {
+  const fig = FIGURES.find(f => f.id === id);
+  if (!fig || !fig.src) return;
+  if (fig.text) stripOcr(fig);
+  fig.text = "";
+  await runOcr(fig);
+}
+
+function renderFigs() {
+  const box = $("#f-figs");
+  if (!box) return;
+  if (!FIGURES.length) { box.innerHTML = ""; return; }
+  box.innerHTML = FIGURES.map(f => {
+    let st;
+    if (f.state === "ok") st = `<span class="st ok">已识别 ${f.text.length} 字，已填入上方描述框 · 建议删掉乱码，补一句「这张图在讲什么」</span>`;
+    else if (f.state === "empty") st = `<span class="st">没识别到文字（纯图形/手绘），建议直接手写一句说明</span>`;
+    else if (f.state === "err") st = `<span class="st err">${esc(f.err || "识别失败")}</span>`;
+    else if (f.state === "running") st = `<span class="st run">正在识别…</span>`;
+    else st = `<span class="st">准备识别…</span>`;
+    return `<div class="fig">
+      <img src="${f.preview || ""}" alt="" data-zoom="${f.id}">
+      <div class="meta"><div class="nm">${esc(f.name)}</div>${st}</div>
+      <div class="ops">
+        <button class="mini" onclick="ocrAgain('${f.id}')">重新识别</button>
+        <button class="mini danger" onclick="rmFig('${f.id}')">移除</button>
+      </div>
+    </div>`;
+  }).join("");
+}
+
+(function initFigures() {
+  const drop = $("#f-drop"), pick = $("#f-file"), list = $("#f-figs");
+  if (!drop || !pick) return;
+  drop.addEventListener("click", () => pick.click());
+  pick.addEventListener("change", e => { handleFiles(e.target.files); pick.value = ""; });
+  ["dragenter", "dragover"].forEach(t => drop.addEventListener(t, e => { e.preventDefault(); drop.classList.add("on"); }));
+  ["dragleave", "dragend"].forEach(t => drop.addEventListener(t, () => drop.classList.remove("on")));
+  drop.addEventListener("drop", e => {
+    e.preventDefault(); drop.classList.remove("on");
+    if (e.dataTransfer) handleFiles(e.dataTransfer.files);
+  });
+  document.addEventListener("paste", e => {
+    const items = e.clipboardData && e.clipboardData.items;
+    if (!items) return;
+    const files = [];
+    for (const it of items) {
+      if (it.kind === "file" && it.type && it.type.indexOf("image/") === 0) {
+        const f = it.getAsFile();
+        if (f) files.push(f);
+      }
+    }
+    if (files.length) { e.preventDefault(); handleFiles(files); }
+  });
+  if (list) list.addEventListener("click", e => {
+    const id = e.target && e.target.dataset ? e.target.dataset.zoom : null;
+    if (!id) return;
+    const f = FIGURES.find(x => x.id === id);
+    if (f && f.src) openBig(f.src);
+  });
+})();
+
+// data: URL 不能直接新窗口打开（Chrome 会拦），转成 blob 再开
+function openBig(dataUrl) {
+  try {
+    const parts = String(dataUrl).split(",");
+    const mime = (parts[0].match(/data:([^;]+)/) || [])[1] || "image/png";
+    const bin = atob(parts[1]);
+    const arr = new Uint8Array(bin.length);
+    for (let i = 0; i < bin.length; i++) arr[i] = bin.charCodeAt(i);
+    const url = URL.createObjectURL(new Blob([arr], { type: mime }));
+    window.open(url, "_blank");
+    setTimeout(() => URL.revokeObjectURL(url), 60000);
+  } catch (err) {
+    window.open(dataUrl, "_blank");
+  }
 }
 
 renderMeta(); renderStats(); renderTree(); renderProjects(); renderAdvice(); renderPaths();
